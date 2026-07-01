@@ -308,7 +308,7 @@ COMPANIES = {
         "https://careers.wbd.com/global/en/hyderabad-jobs/search-results?keywords=security",
         "own", True),
     "Providence": (
-        "https://jobs.providence.org/search-jobs/security/india",
+        "https://careers.providence.in/search/?q=&q2=&alertId=&title=security&location=&date=#searchresults",
         "own", True),
     "Electronic Arts": (
         "https://jobs.ea.com/en_US/careers/Home/Hyderabad?4536=[8317]&4536_format=3019&listFilterMode=1&jobRecordsPerPage=20",
