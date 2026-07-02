@@ -1,1 +1,1142 @@
-{}
+{
+  "23b51d3e6072fdad1522ded51a3adf6c": {
+    "company": "Microsoft",
+    "title": "Principal Threat Research Lead",
+    "seen_at": "2026-07-02T08:39:49.698242"
+  },
+  "74d04de05a749fdfda2a065b766dce41": {
+    "company": "Microsoft",
+    "title": "Senior Security Researcher",
+    "seen_at": "2026-07-02T08:39:49.698261"
+  },
+  "2f646a80c8cb17e626f4e976b2786b23": {
+    "company": "Apple",
+    "title": "Regulatory Compliance Engineer",
+    "seen_at": "2026-07-02T08:40:04.689237"
+  },
+  "19edc8b60a71c53faea2491f9b11cc64": {
+    "company": "Amazon",
+    "title": "SAP Security Architect, AWS FinTech",
+    "seen_at": "2026-07-02T08:40:12.221116"
+  },
+  "6300f1438174b3a8cbc47c2ac65e7202": {
+    "company": "Amazon",
+    "title": "Cloud Security Architect",
+    "seen_at": "2026-07-02T08:40:12.221136"
+  },
+  "35224dc9cfeb877fd2e4ee6d5257916f": {
+    "company": "Amazon",
+    "title": "Security Program Manager, Infrastructure Physical Security",
+    "seen_at": "2026-07-02T08:40:12.221152"
+  },
+  "aedb1d2cb7febd5c706e00f2d928af0e": {
+    "company": "Amazon",
+    "title": "IT Risk Manager, IT Risk",
+    "seen_at": "2026-07-02T08:40:12.221164"
+  },
+  "8a8c34707b8083c7702fb7b887a36199": {
+    "company": "Nvidia",
+    "title": "JobsSecurityNetwork SecurityInformation SecuritySecurity OperationsSecurity PoliciesSystem SecuritySecurity EngineeringSecurity SolutionsSecurity ComplianceSecurity Controls",
+    "seen_at": "2026-07-02T08:40:28.238752"
+  },
+  "28b1a254c1f845424e2573195e173eda": {
+    "company": "Nvidia",
+    "title": "SecurityNetwork SecurityInformation SecuritySecurity OperationsSecurity PoliciesSystem SecuritySecurity EngineeringSecurity SolutionsSecurity ComplianceSecurity Controls",
+    "seen_at": "2026-07-02T08:40:28.238787"
+  },
+  "594971e664916eb001e1eda2b54def1a": {
+    "company": "Nvidia",
+    "title": "Security Engineering",
+    "seen_at": "2026-07-02T08:40:28.238805"
+  },
+  "6a602c1eb060cb91309f3bf8308eef0d": {
+    "company": "Nvidia",
+    "title": "Security Operations",
+    "seen_at": "2026-07-02T08:40:28.238821"
+  },
+  "c5eeddd7c01fc643d12071dc1f2e0f9c": {
+    "company": "Qualcomm",
+    "title": "Senior Lead Engineer- Product Security tools, AI",
+    "seen_at": "2026-07-02T08:40:36.267069"
+  },
+  "5dd4aac893170a71a030e081ed68dd22": {
+    "company": "Qualcomm",
+    "title": "Cyber Security Engineer",
+    "seen_at": "2026-07-02T08:40:36.267087"
+  },
+  "15a24542d5ed64687750bc3fafd9f81b": {
+    "company": "Qualcomm",
+    "title": "Senior Lead Engineer - Android OS System Security",
+    "seen_at": "2026-07-02T08:40:36.267100"
+  },
+  "63853ec0d2a5559c4e69582dcf1dc5a5": {
+    "company": "Qualcomm",
+    "title": "Cyber Security Engineer, Staff",
+    "seen_at": "2026-07-02T08:40:36.267110"
+  },
+  "6c10478a8fc26fea65b7c30f4c9c7fa2": {
+    "company": "Qualcomm",
+    "title": "Cyber Security Engineer, Senior",
+    "seen_at": "2026-07-02T08:40:36.267118"
+  },
+  "1051490c76c55722ca29432fa2f033c7": {
+    "company": "AMD",
+    "title": "Lead Soc Verification Engineer",
+    "seen_at": "2026-07-02T08:40:44.630332"
+  },
+  "2e31be33b9f214951c0bbe06f4a7fc09": {
+    "company": "AMD",
+    "title": "SOC VERIFICATION LEAD",
+    "seen_at": "2026-07-02T08:40:44.630346"
+  },
+  "b5f92df11032fb5cce27302a2d0f93e8": {
+    "company": "Intel",
+    "title": "SoC Logic Design Engineer",
+    "seen_at": "2026-07-02T08:40:54.391447"
+  },
+  "e0ef909ecdb051a9df7a3d52134a2ed2": {
+    "company": "Intel",
+    "title": "Info Security DevSecOps Engineer",
+    "seen_at": "2026-07-02T08:40:54.391465"
+  },
+  "03b8579dd232f93685e80d1c9adf3d38": {
+    "company": "Micron Technology",
+    "title": "Senior Compliance Lead IT SOX",
+    "seen_at": "2026-07-02T08:41:05.376283"
+  },
+  "a821781da101aac1bdf6ae0c101e6d64": {
+    "company": "Micron Technology",
+    "title": "Sr. Product Security EngineerBoise, Idaho, United States of America",
+    "seen_at": "2026-07-02T08:41:05.376305"
+  },
+  "8337f3d641d9ecfafc1499ce736e54f9": {
+    "company": "Micron Technology",
+    "title": "Sr. Security Engineer",
+    "seen_at": "2026-07-02T08:41:05.376318"
+  },
+  "b722f980cd2d22ee18d859f443f845fd": {
+    "company": "Micron Technology",
+    "title": "Sr. GRC Analyst",
+    "seen_at": "2026-07-02T08:41:05.376328"
+  },
+  "52c08d5bc902507c979769def3dad47b": {
+    "company": "Pegasystems",
+    "title": "Principal Engineer, Technical Support, Security",
+    "seen_at": "2026-07-02T08:43:23.317411"
+  },
+  "60a3e2efb646b05d95c05791ed7a8ab0": {
+    "company": "Intuit",
+    "title": "Refine by KeywordAdd +Job CategoryExecutive1Product Management1Security, Risk & Fraud2Software Engineering5CountryIndia8State/RegionKarnataka8CityBengaluru8ATSAvature8LocationDisplay",
+    "seen_at": "2026-07-02T08:44:09.508927"
+  },
+  "a256fb8d9012f74ed30804b945e0629b": {
+    "company": "Freshworks",
+    "title": "Lead - Cybersecurity Risk & Compliance",
+    "seen_at": "2026-07-02T08:44:16.478822"
+  },
+  "2fb6a81cf1d38b12682a7546b8953332": {
+    "company": "Freshworks",
+    "title": "Associate - Customer Success (CX-NA)",
+    "seen_at": "2026-07-02T08:44:16.478837"
+  },
+  "164f753e677a780c8c0279ec4697fec6": {
+    "company": "Freshworks",
+    "title": "Staff Product Manager - Enterprise Security, IAM & Data Platform",
+    "seen_at": "2026-07-02T08:44:16.478850"
+  },
+  "f8907740af8d87794b119ff7ad689661": {
+    "company": "Freshworks",
+    "title": "Lead - Cybersecurity Third-Party Risk Management",
+    "seen_at": "2026-07-02T08:44:16.478860"
+  },
+  "4641beb751a7fe2a5ddba927a7844aa1": {
+    "company": "GitLab",
+    "title": "Director of Engineering, Security Factory",
+    "seen_at": "2026-07-02T08:44:25.411201"
+  },
+  "b477f4f8efafc88ece3b7177e7dba193": {
+    "company": "GitLab",
+    "title": "Global Sales Development Operations Senior Associate",
+    "seen_at": "2026-07-02T08:44:25.411223"
+  },
+  "5d5b9d3ee2205168363d548c2a059e18": {
+    "company": "GitLab",
+    "title": "Manager, Security Incident Response Team (USA)",
+    "seen_at": "2026-07-02T08:44:25.411237"
+  },
+  "a1d22dad77e434e5cae71b805ae8a687": {
+    "company": "GitLab",
+    "title": "Principal Product Manager, Security - GTM",
+    "seen_at": "2026-07-02T08:44:25.411250"
+  },
+  "5d62faefe0b434863d0017a76b260d58": {
+    "company": "GitLab",
+    "title": "Senior Backend Engineer (RoR/Go), SSCS: Pipeline Security",
+    "seen_at": "2026-07-02T08:44:25.411265"
+  },
+  "b60cfa5f5a205d7105f7969d0e61a19e": {
+    "company": "GitLab",
+    "title": "Senior Manager, Customer Trust & Security Governance",
+    "seen_at": "2026-07-02T08:44:25.411278"
+  },
+  "ab0a347b058418e5598dd1c1c1043077": {
+    "company": "GitLab",
+    "title": "Senior Manager, Security Compliance",
+    "seen_at": "2026-07-02T08:44:25.411288"
+  },
+  "38b88fdd4550690bb56b90f28cc0371e": {
+    "company": "GitLab",
+    "title": "Staff Backend Engineer,  Software Supply Chain Security",
+    "seen_at": "2026-07-02T08:44:25.411301"
+  },
+  "accc60d4d7b6877131c0e67cde1421a1": {
+    "company": "GitLab",
+    "title": "Staff Infrastructure Security Engineer (APAC, EMEA, or US)",
+    "seen_at": "2026-07-02T08:44:25.411315"
+  },
+  "ac1902c209b64f044dcf1097c8e52aaa": {
+    "company": "GitLab",
+    "title": "Staff Social Media Manager",
+    "seen_at": "2026-07-02T08:44:25.411323"
+  },
+  "573073166049319ee480718d23addbc2": {
+    "company": "GitLab",
+    "title": "VP of Product Security",
+    "seen_at": "2026-07-02T08:44:25.411334"
+  },
+  "55edcdcfe255d4d9c9117b424de83c89": {
+    "company": "CrowdStrike",
+    "title": "Engineer III - Vulnerability Detection",
+    "seen_at": "2026-07-02T08:44:43.696145"
+  },
+  "258ae19fccf95514925a2f4b2feffafe": {
+    "company": "CrowdStrike",
+    "title": "Regional Sales Engineer, Next Gen Identity Security",
+    "seen_at": "2026-07-02T08:44:43.696164"
+  },
+  "f651c1a34e72b74091fd8b67c8522ca1": {
+    "company": "Zscaler",
+    "title": "Principal DevSecOps Engineer (Design/Architecture)",
+    "seen_at": "2026-07-02T08:44:52.136380"
+  },
+  "34d979a8c2401bb045537a0907b982e4": {
+    "company": "Sophos",
+    "title": "Incident Response & Threat Intelligence Lead\u200bRemote",
+    "seen_at": "2026-07-02T08:45:07.199709"
+  },
+  "77ae4d36a990f045c807c087d54873ae": {
+    "company": "Sophos",
+    "title": "Senior Director, Threat OperationsRemote",
+    "seen_at": "2026-07-02T08:45:07.199726"
+  },
+  "50cc994d7d4a315565fd5071c875be66": {
+    "company": "Sophos",
+    "title": "Security Solutions Consultant (via 3rd party)Remote",
+    "seen_at": "2026-07-02T08:45:07.199740"
+  },
+  "07d431beb32fc000e94ac86abb82da6c": {
+    "company": "Sophos",
+    "title": "Managed Detection Response and Security Operations",
+    "seen_at": "2026-07-02T08:45:07.199754"
+  },
+  "528e5df73f252f5ff3cd066405affc02": {
+    "company": "Sophos",
+    "title": "Senior Advisor, Incident ResponseRemote",
+    "seen_at": "2026-07-02T08:45:07.199766"
+  },
+  "cc6284999d4f1cbdcd264b31e67497cc": {
+    "company": "Sophos",
+    "title": "Senior Threat Analyst 1Remote",
+    "seen_at": "2026-07-02T08:45:07.199776"
+  },
+  "852ffee938dbe8e78a932dba9838384e": {
+    "company": "Sophos",
+    "title": "Compliance Enablement Technical Program ManagerRemote",
+    "seen_at": "2026-07-02T08:45:07.199787"
+  },
+  "aca83182a1195c157dab91ce4c33312d": {
+    "company": "Sophos",
+    "title": "Senior Threat Behavior Researcher (Romania)Remote",
+    "seen_at": "2026-07-02T08:45:07.199797"
+  },
+  "e9dd4a5c55a7cdec53abfbe28fe23436": {
+    "company": "Sophos",
+    "title": "Customer Success Associate \u2013 ScaleRemote",
+    "seen_at": "2026-07-02T08:45:07.199812"
+  },
+  "52e413a528d3ac56e2077d4135e690dc": {
+    "company": "Sophos",
+    "title": "Alliance Partnership Manager (Cyber Insurance)Remote",
+    "seen_at": "2026-07-02T08:45:07.199824"
+  },
+  "8695e8968f76f552a4e26e3f77134bad": {
+    "company": "Sophos",
+    "title": "Senior Threat Behavior Researcher (UK)Remote",
+    "seen_at": "2026-07-02T08:45:07.199833"
+  },
+  "e3302bcca10a38ffd025ea9bd9a5f1c6": {
+    "company": "Sophos",
+    "title": "Sr. AI Threat ResearcherRemote",
+    "seen_at": "2026-07-02T08:45:07.199845"
+  },
+  "9fa4ffdf338c352bd4761d3ce79d5ee3": {
+    "company": "Sophos",
+    "title": "Senior Manager, Incident ResponseRemote",
+    "seen_at": "2026-07-02T08:45:07.199856"
+  },
+  "5ce95fa7776b9d233f35ca0f0b6d3519": {
+    "company": "Sophos",
+    "title": "Cyber Risk Advisor (Romania)Remote",
+    "seen_at": "2026-07-02T08:45:07.199867"
+  },
+  "bb13d7ac6ad9a9264cd2f5c23910abba": {
+    "company": "Sophos",
+    "title": "Senior Incident Response Engineer (Romania)Remote",
+    "seen_at": "2026-07-02T08:45:07.199879"
+  },
+  "9edeaa49d6effd7858e8c1cb2ccef21e": {
+    "company": "Sophos",
+    "title": "Senior Threat Researcher \u2013 Behavioral ProtectionRemote",
+    "seen_at": "2026-07-02T08:45:07.199893"
+  },
+  "cbbc7945b9e3bc2c64e5f6e9fba7199a": {
+    "company": "Sophos",
+    "title": "\u200bSenior Penetration Testing AnalystRemote",
+    "seen_at": "2026-07-02T08:45:07.199907"
+  },
+  "97fc6bd09c9217e8ad96c281d449c30c": {
+    "company": "Sophos",
+    "title": "Penetration Testing Senior Advisor ConsultantRemote",
+    "seen_at": "2026-07-02T08:45:07.199918"
+  },
+  "7325403d18030e72ba0e89947414a5a7": {
+    "company": "Sophos",
+    "title": "Senior Manager, Penetration TestingRemote",
+    "seen_at": "2026-07-02T08:45:07.199929"
+  },
+  "f114a051522f3f03ddb71574aa4c371c": {
+    "company": "Sophos",
+    "title": "Threat Analyst 3Remote",
+    "seen_at": "2026-07-02T08:45:07.199940"
+  },
+  "9e1dcc69261f4f552a074c2c4b9ac225": {
+    "company": "Sophos",
+    "title": "Principal Software Engineer 1 (NSG Firewall)Remote",
+    "seen_at": "2026-07-02T08:45:07.199950"
+  },
+  "ba9d73b15c9bd5b9a8929eed4672d8e4": {
+    "company": "Sophos",
+    "title": "Threat Analyst 2Remote",
+    "seen_at": "2026-07-02T08:45:07.199961"
+  },
+  "21ff7a135462bf3ee1706dc54a5ab3eb": {
+    "company": "Sophos",
+    "title": "Senior Threat Researcher Detection Engineer (Romania)Remote",
+    "seen_at": "2026-07-02T08:45:07.199973"
+  },
+  "600ab3b89c972cd6ea85d67508d31a96": {
+    "company": "Sophos",
+    "title": "Senior Threat Researcher- Threat Detection EngineerRemote",
+    "seen_at": "2026-07-02T08:45:07.199984"
+  },
+  "180634b7a9e865808398fcc7a2b1882e": {
+    "company": "Sophos",
+    "title": "PEZA Compliance Officer (6 Months Contract)Remote",
+    "seen_at": "2026-07-02T08:45:07.199995"
+  },
+  "af5687d3dc54cef4fb703de20ad9e8d4": {
+    "company": "Cisco",
+    "title": "Associated with 2 categoriesAssociated with 2 categories",
+    "seen_at": "2026-07-02T08:45:23.182339"
+  },
+  "08cf3bd2463caa90cb9cb29ec13a310a": {
+    "company": "Cisco",
+    "title": "Associated with 2 categories",
+    "seen_at": "2026-07-02T08:45:23.182359"
+  },
+  "496ad1c74b83c3907f5ffb0720008113": {
+    "company": "Splunk",
+    "title": "Associated with 2 categoriesAssociated with 2 categories",
+    "seen_at": "2026-07-02T08:45:33.519813"
+  },
+  "3dbd4fae8b467ca0f2633a8a2d158d23": {
+    "company": "Splunk",
+    "title": "Associated with 2 categories",
+    "seen_at": "2026-07-02T08:45:33.519834"
+  },
+  "d02d9b8904f1b4ca566a0caa63fa8b73": {
+    "company": "Snowflake",
+    "title": "Senior Software Engineer - Product Security - Poland",
+    "seen_at": "2026-07-02T08:46:14.842535"
+  },
+  "679e490fe15b1059a950e2fa798ed6c2": {
+    "company": "Snowflake",
+    "title": "Anti-Abuse Senior Software Engineer, Product Security",
+    "seen_at": "2026-07-02T08:46:14.842555"
+  },
+  "f58f247b12e606d0e3ef28ea299b1034": {
+    "company": "Snowflake",
+    "title": "Senior Cloud Support Engineer - Security",
+    "seen_at": "2026-07-02T08:46:14.842568"
+  },
+  "ad195c7ca0067cfbd23da70e2dac969e": {
+    "company": "Snowflake",
+    "title": "Principal Software Engineer II - Product Security",
+    "seen_at": "2026-07-02T08:46:14.842582"
+  },
+  "06e7b12d96b891ccb8a7425ec9378c5e": {
+    "company": "Snowflake",
+    "title": "Principal Engineer, Identity Data Security and Trust",
+    "seen_at": "2026-07-02T08:46:14.842594"
+  },
+  "d21c1095b6136225a21616f062e804bf": {
+    "company": "Snowflake",
+    "title": "Senior Security Architect, Applied Field Engineering (AFE)",
+    "seen_at": "2026-07-02T08:46:14.842607"
+  },
+  "236b6918f77e4433be8e7c02a5aea919": {
+    "company": "Snowflake",
+    "title": "Director of Engineering - Application, Cloud and Offensive Security",
+    "seen_at": "2026-07-02T08:46:14.842644"
+  },
+  "17ec814f2d8b5fe17d8a8ad417892c83": {
+    "company": "Snowflake",
+    "title": "Principal Security Engineer - Threat Intelligence",
+    "seen_at": "2026-07-02T08:46:14.842657"
+  },
+  "ebe752010de6f3236ef92fe0d13289c2": {
+    "company": "Snowflake",
+    "title": "Senior Software Engineer - Product Security Assurance",
+    "seen_at": "2026-07-02T08:46:14.842670"
+  },
+  "56e1b9a167463ded5d8b55bcd91cf2ec": {
+    "company": "Goldman Sachs",
+    "title": "Engineering Division - Tech Risk Advisory - Associate - HyderabadHyderabad",
+    "seen_at": "2026-07-02T08:47:05.079853"
+  },
+  "59857605daeeeeb2c722a09efdb92dc9": {
+    "company": "JPMorgan",
+    "title": "Categories0SoftwareEngineering(17)InfrastructureEngineering(6)Compliance & Ops RiskTesting(6)Architecture(3)CCORFoundation(3)Development(2)PredictiveScience(1)ProductManagement(1)FundServicing(1)Program & ProjectManagement(1)CCOR LOB/CF/CountryCoverage(1)SecurityEngineering(1)TechnologySupport(1)",
+    "seen_at": "2026-07-02T08:47:13.476084"
+  },
+  "626b701044eec8e557e3547eaabf04ab": {
+    "company": "JPMorgan",
+    "title": "Security Engineer III - Java, Springboot, AWS",
+    "seen_at": "2026-07-02T08:47:13.476107"
+  },
+  "d0712312b1bc20ed8bec424a284e55de": {
+    "company": "JPMorgan",
+    "title": "CCOR LCCRA Program / Project Sr Associate",
+    "seen_at": "2026-07-02T08:47:13.476120"
+  },
+  "78aad9777239ac32088475cd40c006bb": {
+    "company": "JPMorgan",
+    "title": "Associate - Compliance and Ops Risk Control Testing Quality Review",
+    "seen_at": "2026-07-02T08:47:13.476138"
+  },
+  "18ed3e00bcc5e294587cc8a60ae4f18e": {
+    "company": "JPMorgan",
+    "title": "Senior Associate - AML Governance and Analytics",
+    "seen_at": "2026-07-02T08:47:13.476148"
+  },
+  "17f3e0fd3ecf5bfd8100e9143ebd9a5f": {
+    "company": "JPMorgan",
+    "title": "SoftwareEngineering(17)InfrastructureEngineering(6)Compliance & Ops RiskTesting(6)Architecture(3)CCORFoundation(3)Development(2)PredictiveScience(1)ProductManagement(1)FundServicing(1)Program & ProjectManagement(1)CCOR LOB/CF/CountryCoverage(1)SecurityEngineering(1)TechnologySupport(1)",
+    "seen_at": "2026-07-02T08:47:13.476172"
+  },
+  "ad7e758502309c3d0f55f58bc289060d": {
+    "company": "JPMorgan",
+    "title": "Compliance and Ops Risk Test Specialist",
+    "seen_at": "2026-07-02T08:47:13.476185"
+  },
+  "176e0beace95e2887d1456331230eae7": {
+    "company": "JPMorgan",
+    "title": "Compliance and Ops Risk Test Sr Specialist (TSTP02)",
+    "seen_at": "2026-07-02T08:47:13.476198"
+  },
+  "dd1765e48f45b32964b94b1a6e22a91c": {
+    "company": "JPMorgan",
+    "title": "Associate -APAC AML Governance and Analytics",
+    "seen_at": "2026-07-02T08:47:13.476210"
+  },
+  "f148c5f68de86b57aeb3eccb070ff783": {
+    "company": "JPMorgan",
+    "title": "Associate - Project Manager (Testing Center of Excellence)",
+    "seen_at": "2026-07-02T08:47:13.476221"
+  },
+  "7bb279d3cca39d31f5faa3a9be6d065a": {
+    "company": "JPMorgan",
+    "title": "RelevanceRelevancePosting DateDistanceSecurity Engineer III - Java, Springboot, AWS",
+    "seen_at": "2026-07-02T08:47:13.476239"
+  },
+  "993176f03a8d251c16c65f6b7c46fb21": {
+    "company": "JPMorgan",
+    "title": "Associate - Compliance and Ops Risk Test Lead",
+    "seen_at": "2026-07-02T08:47:13.476250"
+  },
+  "d05d185f1a121ac96f6f7ad4c6d9b795": {
+    "company": "JPMorgan",
+    "title": "Security Engineering",
+    "seen_at": "2026-07-02T08:47:13.476262"
+  },
+  "998e7af0f39c05470451a490b937b4d6": {
+    "company": "JPMorgan",
+    "title": "Lead Infrastructure Engineer \u2013 Risk & BI Platforms, AI-Champion",
+    "seen_at": "2026-07-02T08:47:13.476283"
+  },
+  "098d55d1204a8c14ca14c4d398c851fa": {
+    "company": "HSBC",
+    "title": "Senior Associate, Technology/Media/Telecom",
+    "seen_at": "2026-07-02T08:48:11.058953"
+  },
+  "27411afe7d5367cc90471b83baed0eb2": {
+    "company": "HSBC",
+    "title": "Sr. Associate Director, Technology ManagementGuangzhou,  Guangdong,  ChinaTechnologyHybrid",
+    "seen_at": "2026-07-02T08:48:11.058972"
+  },
+  "c4dbc421c6d28415bc6585a70b845e8a": {
+    "company": "HSBC",
+    "title": "Associate Director, Cybersecurity",
+    "seen_at": "2026-07-02T08:48:11.058982"
+  },
+  "2d534dd13aa59bccf0834e9b07288dcb": {
+    "company": "HSBC",
+    "title": "Senior Technology Programme Manager (Change Governance, Programme Delivery)/ Associate Director",
+    "seen_at": "2026-07-02T08:48:11.058995"
+  },
+  "6fd70e355fe21851fa3258d26e949dfb": {
+    "company": "HSBC",
+    "title": "VP INM, RESILIENCE RISK AND DPO",
+    "seen_at": "2026-07-02T08:48:11.059007"
+  },
+  "ca1aa6846ba8fed01501ce49a50abbc9": {
+    "company": "HSBC",
+    "title": "Associate Director, CybersecurityGuangzhou,  Guangdong,  ChinaTechnology",
+    "seen_at": "2026-07-02T08:48:11.059019"
+  },
+  "d809505cb430072be3895000179bdc54": {
+    "company": "HSBC",
+    "title": "DevOps Lead (Python,CI/CD,Jenkins,Kubernetes ) /Senior Associate Director",
+    "seen_at": "2026-07-02T08:48:11.059029"
+  },
+  "2f4465bdd0e63f2d54a4d87bbb4ce1fa": {
+    "company": "HSBC",
+    "title": "Associate Director, Cybersecurity SpecialistGuangzhou,  Guangdong,  ChinaHybrid",
+    "seen_at": "2026-07-02T08:48:11.059041"
+  },
+  "23b1558c68405dbd74b685bc3479b548": {
+    "company": "HSBC",
+    "title": "Associate Director, Cybersecurity Specialist",
+    "seen_at": "2026-07-02T08:48:11.059051"
+  },
+  "5df2b35f82e61fac73f4739acbee6464": {
+    "company": "HSBC",
+    "title": "Data Engineering Lead / Senior Associate Director, Data and Analytics",
+    "seen_at": "2026-07-02T08:48:11.059061"
+  },
+  "dcb17cf64d8371a6814fbcac01e6f43f": {
+    "company": "HSBC",
+    "title": "Head of Vendor Management (Technology), Senior Associate Director Cybersecurity",
+    "seen_at": "2026-07-02T08:48:11.059073"
+  },
+  "92663dc6dd08bc3c00827e2f46554669": {
+    "company": "HSBC",
+    "title": "Sr. Associate Director, Technology Management",
+    "seen_at": "2026-07-02T08:48:11.059083"
+  },
+  "0c3dfc87c3c2afa2e6594312770cc5c4": {
+    "company": "HSBC",
+    "title": "Senior Data Architect / Associate Director, Solution Architecture",
+    "seen_at": "2026-07-02T08:48:11.059093"
+  },
+  "ecf0501410a3183b89bde317d6c12d64": {
+    "company": "Wells Fargo",
+    "title": "Senior Information Security Engineer - Penetration Testing",
+    "seen_at": "2026-07-02T08:48:17.200405"
+  },
+  "e2d7fd5fffbc49f27b913da6f509b6c8": {
+    "company": "Invesco",
+    "title": "Cloud Security Engineer - I",
+    "seen_at": "2026-07-02T08:48:31.282591"
+  },
+  "59ba125238e1403c4d1b81dba76277a3": {
+    "company": "Invesco",
+    "title": "Compliance Analyst",
+    "seen_at": "2026-07-02T08:48:31.282608"
+  },
+  "76f362831aedb2ef6833c2662851bd91": {
+    "company": "Invesco",
+    "title": "Knowledge Management Associate",
+    "seen_at": "2026-07-02T08:48:31.282619"
+  },
+  "756092b31319bc0a99a42e9d5b654bae": {
+    "company": "State Street",
+    "title": "Alternative Ops Fund Accounting, Senior Associate",
+    "seen_at": "2026-07-02T08:49:10.092140"
+  },
+  "bf98e2916f5bb585d817fb3a72a11d40": {
+    "company": "Stripe",
+    "title": "Mobile Security Engineer",
+    "seen_at": "2026-07-02T08:50:14.926379"
+  },
+  "58acbcac54b1c123fcf6457d8457f18b": {
+    "company": "Stripe",
+    "title": "Program Manager, Security Business Enablement",
+    "seen_at": "2026-07-02T08:50:14.926397"
+  },
+  "2c8fb96968af2f97620976a3ce4617f5": {
+    "company": "Stripe",
+    "title": "Security Engineer - Offensive Security",
+    "seen_at": "2026-07-02T08:50:14.926410"
+  },
+  "84eb936f9645d1cbb351c5cc8137f0d8": {
+    "company": "Stripe",
+    "title": "Software Engineer, Security Analytics Infrastructure",
+    "seen_at": "2026-07-02T08:50:14.926423"
+  },
+  "f47daf235ef4a322a8c51d79738e5eb2": {
+    "company": "Stripe",
+    "title": "Security Engineer - Threat Detection",
+    "seen_at": "2026-07-02T08:50:14.926434"
+  },
+  "ff52dd1f51d35a7397cfa61898440ec4": {
+    "company": "Stripe",
+    "title": "Security Incident Response Manager",
+    "seen_at": "2026-07-02T08:50:14.926445"
+  },
+  "02c7b87b62d478d5263fbcc76eb32766": {
+    "company": "Stripe",
+    "title": "Security Engineer, Bridge",
+    "seen_at": "2026-07-02T08:50:14.926456"
+  },
+  "2dce442f3a7d24e42272660d45ee6e37": {
+    "company": "Stripe",
+    "title": "Software Engineer, Product Security Data Platforms",
+    "seen_at": "2026-07-02T08:50:14.926470"
+  },
+  "88b2ac3717c71df876bac2e01d4d4030": {
+    "company": "Stripe",
+    "title": "Backend Engineer, AI Security",
+    "seen_at": "2026-07-02T08:50:14.926482"
+  },
+  "57b96b5bf1fb306bfe68f861b608e454": {
+    "company": "Stripe",
+    "title": "Cloud Security Engineer",
+    "seen_at": "2026-07-02T08:50:14.926494"
+  },
+  "94a934195950ae025ec5c9fef33c60d1": {
+    "company": "Tide",
+    "title": "Engineer, Threat Detection - 5",
+    "seen_at": "2026-07-02T08:50:27.429049"
+  },
+  "dcfefc99150d24218032d96c8694d63d": {
+    "company": "Tide",
+    "title": "Engineer, Threat Detection - 5",
+    "seen_at": "2026-07-02T08:50:27.429073"
+  },
+  "3ca9f2a3a28a739c111cbc48d3abaeeb": {
+    "company": "Tide",
+    "title": "Engineer, Threat Detection - 5",
+    "seen_at": "2026-07-02T08:50:27.429085"
+  },
+  "3ab125d768191c00dd33c69d41f58fd1": {
+    "company": "Tide",
+    "title": "Engineer, Threat Detection - 5",
+    "seen_at": "2026-07-02T08:50:27.429094"
+  },
+  "10d026143ffd0af642834cc9c11ba8bd": {
+    "company": "Tide",
+    "title": "Engineer, Threat Detection - 5",
+    "seen_at": "2026-07-02T08:50:27.429102"
+  },
+  "5ea70910e0f0a936575887fc48d423fe": {
+    "company": "Tide",
+    "title": "Engineer, Threat Detection - 5\u200e\t \u00a0\u034f\u034f",
+    "seen_at": "2026-07-02T08:50:27.429123"
+  },
+  "2015d9c44e4b1af4aff08f11673e96b2": {
+    "company": "Tide",
+    "title": "Information Security Compliance Manager (India)",
+    "seen_at": "2026-07-02T08:50:27.429136"
+  },
+  "9cf6309339c0d31097a2fec28cc08013": {
+    "company": "Tide",
+    "title": "Premium Accounts Associate",
+    "seen_at": "2026-07-02T08:50:27.429148"
+  },
+  "b93fec298836ae6f09139c921582996f": {
+    "company": "Tide",
+    "title": "Regulatory Risk & Compliance Specialist - UK",
+    "seen_at": "2026-07-02T08:50:27.429163"
+  },
+  "91fa05ca04f5b397ee41111acf1a4c7e": {
+    "company": "Tide",
+    "title": "Social Media Associate with German",
+    "seen_at": "2026-07-02T08:50:27.429176"
+  },
+  "d442d7e32904e4006de554300cb827ad": {
+    "company": "Tide",
+    "title": "Staff Data Scientist (Fraud & Risk)",
+    "seen_at": "2026-07-02T08:50:27.429187"
+  },
+  "de21a7fadd28f51ae339c14063c95e5d": {
+    "company": "Tide",
+    "title": "Vulnerable Users Team Associate",
+    "seen_at": "2026-07-02T08:50:27.429200"
+  },
+  "f3797f864ebc21f1d4dd516cc7fda878": {
+    "company": "Tide",
+    "title": "Vulnerable Users Team Associate",
+    "seen_at": "2026-07-02T08:50:27.429208"
+  },
+  "fae279372728f223d426f4512a89fa46": {
+    "company": "IBM",
+    "title": "Career AreasSecurityConsulting(140)Software Engineering(138)Data & Analytics(51)Enterprise Operations(37)Infrastructure & Technology(22)Project Management(6)View all",
+    "seen_at": "2026-07-02T08:50:59.336794"
+  },
+  "89cae9065456a57ec5bff81ac40727a1": {
+    "company": "IBM",
+    "title": "SecurityConsulting(140)Software Engineering(138)Data & Analytics(51)Enterprise Operations(37)Infrastructure & Technology(22)Project Management(6)",
+    "seen_at": "2026-07-02T08:50:59.336822"
+  },
+  "426f47c4067eb4375af7b8c38387d337": {
+    "company": "IBM",
+    "title": "SecurityConsulting(140)Software Engineering(138)Data & Analytics(51)Enterprise Operations(37)Infrastructure & Technology(22)Project Management(6)View all",
+    "seen_at": "2026-07-02T08:50:59.336843"
+  },
+  "f9896746b4379d0c18db524bda6c6ba5": {
+    "company": "Accenture",
+    "title": "Job:Workplace Service Delivery Associate Manager",
+    "seen_at": "2026-07-02T08:52:45.742321"
+  },
+  "857b240eb12bc9c84f93167b6249c265": {
+    "company": "Accenture",
+    "title": "Job:Sales Capture Associate DirectorJob Number:R00337330",
+    "seen_at": "2026-07-02T08:52:45.742340"
+  },
+  "32862f182bc8231c9ec82a99b81e5a2b": {
+    "company": "Accenture",
+    "title": "IMU Sales Capture Associate Director",
+    "seen_at": "2026-07-02T08:52:45.742350"
+  },
+  "381bf8906ac6dd147c7efaa4e288f8e8": {
+    "company": "Accenture",
+    "title": "Strategy Innovation Associate Director",
+    "seen_at": "2026-07-02T08:52:45.742361"
+  },
+  "506af72ad0649eaa269f06f8486469aa": {
+    "company": "Accenture",
+    "title": "Workplace Service Delivery Associate Manager",
+    "seen_at": "2026-07-02T08:52:45.742371"
+  },
+  "efa90733dffb2481286fdbb63e10075a": {
+    "company": "Accenture",
+    "title": "Job:Sales Capture Associate Director",
+    "seen_at": "2026-07-02T08:52:45.742380"
+  },
+  "7b4ba5faec3ad705e34481e3aa391f22": {
+    "company": "Accenture",
+    "title": "Job:Workplace Service Delivery Associate ManagerJob Number:R00334202",
+    "seen_at": "2026-07-02T08:52:45.742392"
+  },
+  "2c0674f33ea0f6b2f21886bf7d0e6047": {
+    "company": "Accenture",
+    "title": "IMU Sales Capture Associate DirectorExpand job detailsNew Delhi",
+    "seen_at": "2026-07-02T08:52:45.742403"
+  },
+  "0c7b0af954d0b780e164b686e6070ac4": {
+    "company": "Accenture",
+    "title": "Workplace Service Delivery Associate Manager-EventsExpand job detailsNew Delhi",
+    "seen_at": "2026-07-02T08:52:45.742415"
+  },
+  "c119f55beb0c06077620b648554f7cd7": {
+    "company": "Accenture",
+    "title": "Job:Strategy Innovation Associate DirectorJob Number:R00328145",
+    "seen_at": "2026-07-02T08:52:45.742426"
+  },
+  "0d62a3d41da6bf99f1988ffe7485d893": {
+    "company": "Accenture",
+    "title": "Job:Strategy Innovation Associate Director",
+    "seen_at": "2026-07-02T08:52:45.742436"
+  },
+  "f496b151195127169b240add884061f1": {
+    "company": "Accenture",
+    "title": "Workplace Service Delivery Associate Manager-Events",
+    "seen_at": "2026-07-02T08:52:45.742446"
+  },
+  "8bb568b6185de2472e679065c438a674": {
+    "company": "Accenture",
+    "title": "Sales Capture Associate Director",
+    "seen_at": "2026-07-02T08:52:45.742456"
+  },
+  "4a34eb0de890a6a2ebade5cc73aa014d": {
+    "company": "Deloitte",
+    "title": "Cisco Network Security Engineer/ Senior Consultant",
+    "seen_at": "2026-07-02T08:53:26.453320"
+  },
+  "93d4ad09055c477b40f20449e539091f": {
+    "company": "Deloitte",
+    "title": "Cloud Security Engineer Manager",
+    "seen_at": "2026-07-02T08:53:26.453338"
+  },
+  "2fb0afdcf86450731bce94a20d08284f": {
+    "company": "Deloitte",
+    "title": "Cloud Security Senior Manager \u2013 Azure Infrastructure & AI",
+    "seen_at": "2026-07-02T08:53:26.453356"
+  },
+  "2c56f518808e001ae1b849c1dc4519a5": {
+    "company": "Deloitte",
+    "title": "Security Engineer III, SIEM Engineer (Secret Clearance)",
+    "seen_at": "2026-07-02T08:53:26.453371"
+  },
+  "c05ca7d4934b66f605e8dc431c5e2689": {
+    "company": "Deloitte",
+    "title": "Cloud Security Senior Consultant \u2013 M365",
+    "seen_at": "2026-07-02T08:53:26.453386"
+  },
+  "705aaaf3d9f112b189dcc17056776f75": {
+    "company": "Deloitte",
+    "title": "Cloud Security Consultant \u2013 Azure Infrastructure & AI",
+    "seen_at": "2026-07-02T08:53:26.453402"
+  },
+  "73dfecefb9955ffbedb5c5c4bb0546a0": {
+    "company": "Deloitte",
+    "title": "Cyber Oracle Cloud Security \u2013 Consultant / Security Engineer II",
+    "seen_at": "2026-07-02T08:53:26.453415"
+  },
+  "2e338d256226749de98615d9ad14391e": {
+    "company": "Deloitte",
+    "title": "Cyber Network Security Architecture \u2013 Senior Manager",
+    "seen_at": "2026-07-02T08:53:26.453428"
+  },
+  "2f4eef1efa773a9370f05738546c57c4": {
+    "company": "Deloitte",
+    "title": "Cloud Security Engineer",
+    "seen_at": "2026-07-02T08:53:26.453441"
+  },
+  "97cf73287aa39367223fe38048063091": {
+    "company": "Deloitte",
+    "title": "Cloud Security Engineer (Secret Clearance)",
+    "seen_at": "2026-07-02T08:53:26.453455"
+  },
+  "c1c2df3bfbe580611685afacdc384f6f": {
+    "company": "AT&T",
+    "title": "Sr Specialist Cybersecurity Architect",
+    "seen_at": "2026-07-02T08:55:06.446814"
+  },
+  "3a5a57b493c18cc1335a85ffcaef5c6d": {
+    "company": "AT&T",
+    "title": "Senior Cybersecurity \u2013 Endpoint Security and Infrastructure Security",
+    "seen_at": "2026-07-02T08:55:06.446836"
+  },
+  "59dc66e6e38d932953918cc5dae30bda": {
+    "company": "AT&T",
+    "title": "Associate Director \u2013 Cyber Threat Analytics",
+    "seen_at": "2026-07-02T08:55:06.446850"
+  },
+  "df5dbd4bd0d4c12656ec098b22a983ca": {
+    "company": "AT&T",
+    "title": "Sr Associate App/Prod Support- Service Now Production support- Tier 1",
+    "seen_at": "2026-07-02T08:55:06.446862"
+  },
+  "c6f2307cb3aeefaa49467a0b96762aca": {
+    "company": "Walmart",
+    "title": "Salesfloor Team Associate",
+    "seen_at": "2026-07-02T08:55:25.288304"
+  },
+  "2e98f597fa40036f1b89eafb8e0947f9": {
+    "company": "Walmart",
+    "title": "Janitorial AssociateNeighborhood Market #3908Columbia, TN38401-0000Multiple shifts \u2022 $17.00 - $30.00/hrSelect",
+    "seen_at": "2026-07-02T08:55:25.288331"
+  },
+  "4a9435575d2c2c07dc290feb56fc2d3c": {
+    "company": "Walmart",
+    "title": "Salesfloor Team AssociateNeighborhood Market #3908",
+    "seen_at": "2026-07-02T08:55:25.288344"
+  },
+  "e9d26b33caca8de8d0adee6f24568d2e": {
+    "company": "Walmart",
+    "title": "Fuel Station Team Associate",
+    "seen_at": "2026-07-02T08:55:25.288358"
+  },
+  "556cec5b3e4ac77feae2b4b42efa07b8": {
+    "company": "Walmart",
+    "title": "Janitorial AssociateNeighborhood Market #3908",
+    "seen_at": "2026-07-02T08:55:25.288371"
+  },
+  "5ed8d552d7e3d96ccbf05fadecac0b83": {
+    "company": "Walmart",
+    "title": "Janitorial Associate",
+    "seen_at": "2026-07-02T08:55:25.288381"
+  },
+  "5fef65dded0cbf20f1217ff9f32d41ba": {
+    "company": "Walmart",
+    "title": "Fuel Station Team AssociateWM Supercenter #6878",
+    "seen_at": "2026-07-02T08:55:25.288392"
+  },
+  "0f46cc158fa428e1dfe3b1e340c60839": {
+    "company": "Walmart",
+    "title": "Janitorial AssociateNeighborhood Market #3908Columbia, TN38401-0000Multiple shifts \u2022 $17.00 - $30.00/hr",
+    "seen_at": "2026-07-02T08:55:25.288410"
+  },
+  "c5952593d1172987e7df8cabe29f28c1": {
+    "company": "PepsiCo",
+    "title": "Senior Engineer - SAP Security",
+    "seen_at": "2026-07-02T08:55:50.103192"
+  },
+  "a2216cf4efb039f5ae14f1e2a2a3e6d4": {
+    "company": "PepsiCo",
+    "title": "Executive Manager - BISO Cybersecurity Lead",
+    "seen_at": "2026-07-02T08:55:50.103209"
+  },
+  "3954aceede1be100a0151c754b565e2c": {
+    "company": "PepsiCo",
+    "title": "Architect - SAP Governance and Risk Compliance",
+    "seen_at": "2026-07-02T08:55:50.103221"
+  },
+  "2501afc17f3d4371c5eaa1b60c414997": {
+    "company": "PepsiCo",
+    "title": "Architect - SAP Security Lead",
+    "seen_at": "2026-07-02T08:55:50.103232"
+  },
+  "0a89ce8210e03849f1a8176b410349d2": {
+    "company": "PepsiCo",
+    "title": "Deputy Director - DevSecOps",
+    "seen_at": "2026-07-02T08:55:50.103242"
+  },
+  "7dc7198d3ea47cee29c4ad3bb33be30b": {
+    "company": "McDonald's",
+    "title": "Analyst, Application Security",
+    "seen_at": "2026-07-02T08:55:58.631353"
+  },
+  "3fd1fea56eb20e7e1258429e15581fb3": {
+    "company": "McDonald's",
+    "title": "Cybersecurity Engineer III",
+    "seen_at": "2026-07-02T08:55:58.631369"
+  },
+  "40cf975ac9b5f525223b5253d6963c24": {
+    "company": "McDonald's",
+    "title": "Cybersecurity Engineer II",
+    "seen_at": "2026-07-02T08:55:58.631379"
+  },
+  "373f37bb84e35460ef4e8055770b2a1e": {
+    "company": "Honeywell",
+    "title": "SW SoftwareEngineering(5)SW CyberSecurity(3)ITAnalysis(2)DA DataManagement(1)",
+    "seen_at": "2026-07-02T08:56:39.440973"
+  },
+  "acd2df504af8f57f0bf5902a2a3c0370": {
+    "company": "Honeywell",
+    "title": "Job Functions0SW SoftwareEngineering(5)SW CyberSecurity(3)ITAnalysis(2)DA DataManagement(1)",
+    "seen_at": "2026-07-02T08:56:39.440996"
+  },
+  "0712d23ba97a78b669ccb90ed662ad33": {
+    "company": "Eli Lilly",
+    "title": "Associated with {{count}} categories:",
+    "seen_at": "2026-07-02T08:58:08.039101"
+  },
+  "74ffcc0ebfa31cb5cf629b179f4c590d": {
+    "company": "Novartis",
+    "title": "Associate Director, AI Engineering Manager",
+    "seen_at": "2026-07-02T08:58:15.690793"
+  },
+  "8352ceee9664f682257550f9ca28a575": {
+    "company": "Novartis",
+    "title": "Assoc. Director Visualization",
+    "seen_at": "2026-07-02T08:58:15.690809"
+  },
+  "d1cd790026999d1ef57540c179ca5571": {
+    "company": "Novartis",
+    "title": "Associate Expert Science & Technology",
+    "seen_at": "2026-07-02T08:58:15.690819"
+  },
+  "5dc8d866f18c65f02347c056522ffda5": {
+    "company": "WBD",
+    "title": "Sr. Security Analyst",
+    "seen_at": "2026-07-02T08:58:23.794327"
+  },
+  "efb591b1c3efdaba6043c5c0af1fbc9f": {
+    "company": "WBD",
+    "title": "Sr. Application Security Engineer, Mobile",
+    "seen_at": "2026-07-02T08:58:23.794347"
+  },
+  "31fee55a666c7b93f4b3cf90d198d07e": {
+    "company": "WBD",
+    "title": "Sr. Cloud Security Engineer",
+    "seen_at": "2026-07-02T08:58:23.794359"
+  },
+  "6890e8ef48fdc9f6b35d2f03d1ca60d7": {
+    "company": "Providence",
+    "title": "Principal Security GRC Analyst",
+    "seen_at": "2026-07-02T08:58:34.571088"
+  },
+  "03d9ea98188d49760bb5158d8c284e63": {
+    "company": "Providence",
+    "title": "Manager - Security Engineering",
+    "seen_at": "2026-07-02T08:58:34.571103"
+  },
+  "ca0c983c59524ea750aec5129fc3fac2": {
+    "company": "Barclays",
+    "title": "Network Security Engineering Manager",
+    "seen_at": "2026-07-02T08:59:07.103675"
+  },
+  "4dd4741389177fcf1e9f17abb551c1d7": {
+    "company": "Barclays",
+    "title": "Network Security Engineer - VP",
+    "seen_at": "2026-07-02T08:59:07.103693"
+  },
+  "1da365a9acc868bb164d86ce905e1fcc": {
+    "company": "Barclays",
+    "title": "Penetration Tester - AVP",
+    "seen_at": "2026-07-02T08:59:07.103703"
+  },
+  "e825bd182195d53f8364e6f7a8c0fac4": {
+    "company": "Citi",
+    "title": "Securities and Derivatives Associate Analyst",
+    "seen_at": "2026-07-02T08:59:23.732677"
+  },
+  "33ba0d3ac2acdc2673667c44d3d0fd99": {
+    "company": "Charles Schwab",
+    "title": "Zero Trust Operations EngineerAustin, TX",
+    "seen_at": "2026-07-02T08:59:58.758303"
+  },
+  "9109291db9c020c2b95fc93bf2587a65": {
+    "company": "Charles Schwab",
+    "title": "Senior Security Engineer, Digital AssetsSouthlake, TX; Austin, TX",
+    "seen_at": "2026-07-02T08:59:58.758322"
+  },
+  "18c30999995acb3a379ea4bc9215d473": {
+    "company": "Charles Schwab",
+    "title": "Managing Director, Technology Risk ManagementSouthlake, TX",
+    "seen_at": "2026-07-02T08:59:58.758336"
+  },
+  "3390726f0599ae8e3b923bf8a3295a59": {
+    "company": "Charles Schwab",
+    "title": "Security Developer SeniorWestlake, TX",
+    "seen_at": "2026-07-02T08:59:58.758348"
+  },
+  "cfb4c75611165bd48443c4ef0e1a2c83": {
+    "company": "Charles Schwab",
+    "title": "Senior Security Engineer, Digital Asset CustodySouthlake, TX; Austin, TX",
+    "seen_at": "2026-07-02T08:59:58.758362"
+  },
+  "7810264a2956ccdfe05beb97d240ca16": {
+    "company": "Charles Schwab",
+    "title": "Security Development and Automation EngineerSouthlake, TX",
+    "seen_at": "2026-07-02T08:59:58.758377"
+  },
+  "a483cfa90ec8599010f60e64076c42d6": {
+    "company": "DBS Bank",
+    "title": "Management Associate",
+    "seen_at": "2026-07-02T09:00:10.236578"
+  },
+  "5798be83effd155eee5a14a6b0e0feec": {
+    "company": "S&P Global",
+    "title": "Lead Information Security",
+    "seen_at": "2026-07-02T09:00:33.031499"
+  },
+  "4b8e18ab00e48866d6cee09cbaf3b3c9": {
+    "company": "S&P Global",
+    "title": "Data Security Engineer",
+    "seen_at": "2026-07-02T09:00:33.031518"
+  },
+  "b2196a347ca64e7f936d35566f4ebdef": {
+    "company": "S&P Global",
+    "title": "Associate Director - Application Security",
+    "seen_at": "2026-07-02T09:00:33.031529"
+  },
+  "6c1320faea2063113699e1545765aeac": {
+    "company": "S&P Global",
+    "title": "Senior IT Audit Manager, Cybersecurity & Technology",
+    "seen_at": "2026-07-02T09:00:33.031539"
+  },
+  "293b7c77edd74d21c1e234e2e71c4f41": {
+    "company": "LPL Financial",
+    "title": "OtherJobs(195)TechnologyJobs(61)SalesJobs(47)Service and OperationsJobs(17)Compliance and RiskJobs(7)Employee AdvisorJobs(7)PeopleJobs(5)StrategyJobs(5)LegalJobs(3)AdministrativeJobs(2)Data AnalyticsJobs(2)Finance and AccountingJobs(2)MarketingJobs(2)ResearchJobs(2)Project ManagementJobs(1)",
+    "seen_at": "2026-07-02T09:00:53.509437"
+  },
+  "711826231ab858d7dc93ecfc2a44d921": {
+    "company": "Red Hat",
+    "title": "Help me find:DocumentationDeveloper resourcesTech topicsArchitecture centerSecurity updatesCustomer support",
+    "seen_at": "2026-07-02T09:02:21.381851"
+  },
+  "f4da9ef98718538681bf900c74ee759b": {
+    "company": "Ericsson",
+    "title": "Security Architecture",
+    "seen_at": "2026-07-02T09:02:40.373490"
+  },
+  "5b71c5882f9754295ac65444b3ea1542": {
+    "company": "Ericsson",
+    "title": "SecurityNetwork SecurityInformation SecuritySecurity ClearanceCybersecurityCloud SecuritySystem SecuritySecurity Architecture",
+    "seen_at": "2026-07-02T09:02:40.373511"
+  },
+  "f4908eeb45af36c81fdd6bc0cbec7bf5": {
+    "company": "Optum (UnitedHealth Group)",
+    "title": "Principal Information Security Engineer2354082|Eden Prairie, MN|Remote",
+    "seen_at": "2026-07-02T09:03:36.985361"
+  },
+  "e9b37c14995d6b213956b2aba4064835": {
+    "company": "Nike",
+    "title": "Retail Associate I",
+    "seen_at": "2026-07-02T09:05:15.672843"
+  },
+  "ff306d5edeb6cc6828e08d423cac429f": {
+    "company": "Boeing",
+    "title": "Senior Industrial Security Specialist - Communications Security (COMSEC) Custodian",
+    "seen_at": "2026-07-02T09:05:23.562148"
+  },
+  "cd0a66c43c83cb25d52124080d0b9518": {
+    "company": "Boeing",
+    "title": "Mid-Level Industrial Security Specialist",
+    "seen_at": "2026-07-02T09:05:23.562169"
+  },
+  "03078be85dc9234dfd8e74e86b4fd8e3": {
+    "company": "Boeing",
+    "title": "Senior Industrial Security Specialist",
+    "seen_at": "2026-07-02T09:05:23.562181"
+  },
+  "d2f77bca1348c255a7a322e9872ae60f": {
+    "company": "Boeing",
+    "title": "Experienced Product Security Engineer",
+    "seen_at": "2026-07-02T09:05:23.562194"
+  },
+  "6ff9883492154adbaae57f9fb2f188df": {
+    "company": "Boeing",
+    "title": "Industrial Security Manager",
+    "seen_at": "2026-07-02T09:05:23.562207"
+  },
+  "8b6369ed2f355422e11349591db6c988": {
+    "company": "Boeing",
+    "title": "Product Security Engineer",
+    "seen_at": "2026-07-02T09:05:23.562220"
+  },
+  "bd8bc62ae4169fd3d2a6074a317a578c": {
+    "company": "Boeing",
+    "title": "Senior Product Security Engineer",
+    "seen_at": "2026-07-02T09:05:23.562232"
+  },
+  "0795a55b872b5bbf74cd7289f0ba7f70": {
+    "company": "Boeing",
+    "title": "Security Software Engineer",
+    "seen_at": "2026-07-02T09:05:23.562244"
+  },
+  "d1d99c78707eb0f72fdd60616ff14890": {
+    "company": "Boeing",
+    "title": "Senior Level Industrial Security Specialist",
+    "seen_at": "2026-07-02T09:05:23.562256"
+  },
+  "1c52d564cc7b632e223aab4fc9df2f88": {
+    "company": "Boeing",
+    "title": "Cloud Security Manager",
+    "seen_at": "2026-07-02T09:05:23.562268"
+  },
+  "8335568ec38ae0d1622312d0236a3892": {
+    "company": "Boeing",
+    "title": "Product Security Engineer, Associate",
+    "seen_at": "2026-07-02T09:05:23.562278"
+  },
+  "4848cdbbdd20056908f8bde7eeca1362": {
+    "company": "Boeing",
+    "title": "Program Protection Product Security Analyst",
+    "seen_at": "2026-07-02T09:05:23.562293"
+  }
+}
