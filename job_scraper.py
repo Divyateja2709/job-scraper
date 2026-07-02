@@ -24,9 +24,9 @@ from pathlib import Path
 # CONFIG
 # ─────────────────────────────────────────────────────────────────────────────
 EMAIL_CONFIG = {
-    "sender":   os.getenv("GMAIL_USER", "indrakantidivyateja@gmail.com"),
-    "password": os.getenv("GMAIL_APP_PASSWORD", ""),
-    "receiver": os.getenv("GMAIL_RECEIVER", "indrakantidivyateja@gmail.com"),
+    "sender":    os.getenv("GMAIL_USER", "indrakantidivyateja@gmail.com"),
+    "password":  os.getenv("GMAIL_APP_PASSWORD", ""),
+    "receiver":  os.getenv("GMAIL_RECEIVER", "indrakantidivyateja@gmail.com"),
     "smtp_host": "smtp.gmail.com",
     "smtp_port": 587,
 }
@@ -34,6 +34,39 @@ EMAIL_CONFIG = {
 SEARCH_KEYWORDS = ["security", "cybersecurity", "threat"]
 STATE_FILE = "seen_jobs.json"
 LOG_FILE   = "scraper.log"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# FILTERS  ← NEW
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Title must contain at least one of these cyber-specific words
+CYBER_KEYWORDS = {
+    "security", "cybersecurity", "cyber", "threat", "vulnerability",
+    "penetration", "pentest", "soc", "siem", "forensic", "malware",
+    "incident response", "devsecops", "appsec", "cloudsec", "infosec",
+    "zero trust", "iam", "identity", "grc", "compliance", "risk",
+    "encryption", "firewall", "intrusion", "detection", "red team",
+    "blue team", "purple team", "sast", "dast", "offensive", "defensive",
+}
+
+# Title must also contain at least one role/seniority word
+ROLE_WORDS = {
+    "engineer", "analyst", "architect", "manager", "director", "consultant",
+    "specialist", "researcher", "lead", "head", "officer", "associate",
+    "senior", "staff", "principal", "vp", "intern", "administrator",
+    "scientist", "advisor", "expert", "technician", "operations", "developer",
+    "coordinator", "strategist", "program manager", "product manager",
+}
+
+# Reject jobs whose location string contains any of these
+REJECT_LOCATIONS = {
+    "united states", " tx,", " ca,", " mn,", " ny,", " wa,",
+    "westlake", "southlake", "eden prairie",
+    "united kingdom", "canada", "australia", "romania", "portugal",
+    "japan", "china", "germany", "france", "singapore", "ireland",
+    "cork", "poland", "guangzhou", "new york", "san francisco",
+    "seattle", "london", "amsterdam",
+}
 
 # ─────────────────────────────────────────────────────────────────────────────
 # COMPANY REGISTRY
@@ -483,6 +516,80 @@ def job_id(company, title, url):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# FILTER HELPERS  ← NEW
+# ─────────────────────────────────────────────────────────────────────────────
+def clean_title(text: str) -> str:
+    """Strip location/metadata that gets concatenated onto titles."""
+    for sep in [
+        "India, Telangana", "Hyderabad,", "Telangana,", "Posted",
+        "Full-time", "Full time", "Remote \u2014", "\u00a0\u2014",
+        "Requisition ID", "Application deadline", "Save for Later",
+        " · India", " \u00b7 India", "Bangalore,", "Pune,", "Mumbai,",
+        "Chennai,", "Professional", " [L", "\u00b7India\u00b7",
+    ]:
+        if sep in text:
+            text = text[: text.index(sep)]
+    return text.strip(" ·,\t\n\r")
+
+
+def is_real_job_title(text: str) -> bool:
+    """Return True only if text looks like a real cybersecurity job title."""
+    t = text.lower()
+    words = t.split()
+
+    # Must be 2–10 words
+    if not (2 <= len(words) <= 10):
+        return False
+
+    # Must contain a cyber keyword
+    if not any(kw in t for kw in CYBER_KEYWORDS):
+        return False
+
+    # Must contain a role word
+    if not any(rw in t for rw in ROLE_WORDS):
+        return False
+
+    # Reject page chrome / UI text
+    ui_signals = [
+        "keyword:", "search:", "filter", "clear all", "showing",
+        "results for", "click here", "apply now", "see open", "explore",
+        "shaping", "define what", "from college", "from intern",
+        "empowering", "leading with", "cloudflare", "ray id",
+        "privacy", "cookie", "sign in", "careers at", "open positions",
+        "jobs found", "search results", "https://", "positions related",
+    ]
+    if any(s in t for s in ui_signals):
+        return False
+
+    return True
+
+
+def is_hyderabad_relevant(job: dict, hyd_office: bool) -> bool:
+    """Return True if the job is Hyderabad/India or a remote-friendly role."""
+    loc = job.get("location", "").lower()
+    title = job.get("title", "").lower()
+
+    # Explicit Hyderabad / India match → always keep
+    if any(k in loc for k in ["hyderabad", "telangana", "india"]):
+        return True
+
+    # Remote is acceptable
+    if "remote" in loc or "remote" in title:
+        return True
+
+    # No location info + company has HYD office → trust the URL filter
+    if (not loc or loc in {"global", "hyderabad, india"}) and hyd_office:
+        return True
+
+    # Reject if location is clearly a non-India city/country
+    if any(r in loc for r in REJECT_LOCATIONS):
+        return False
+
+    # Default: include if company has HYD office
+    return hyd_office
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # SCRAPERS
 # ─────────────────────────────────────────────────────────────────────────────
 def keyword_match(text):
@@ -505,8 +612,8 @@ def scrape_greenhouse(company, url):
         jobs = []
 
         for job in r.json().get("jobs", []):
-            title = job.get("title", "")
-            if not keyword_match(title):
+            title = clean_title(job.get("title", ""))
+            if not is_real_job_title(title):
                 continue
             jobs.append({
                 "title": title,
@@ -536,8 +643,8 @@ def scrape_lever(company, url):
         jobs = []
 
         for job in r.json():
-            title = job.get("text", "")
-            if not keyword_match(title):
+            title = clean_title(job.get("text", ""))
+            if not is_real_job_title(title):
                 continue
             jobs.append({
                 "title": title,
@@ -592,30 +699,22 @@ def scrape_html(company, url, hyd_office):
         for tag in soup(["script", "style", "nav", "footer", "header", "noscript", "form"]):
             tag.decompose()
 
-        junk_patterns = [
-            "searched for", "filter(s) applied", "save search", "no results",
-            "sign in", "create account", "cookie", "privacy policy",
-            "results found", "clear filter", "sort by", "showing results",
-            "loading", "please wait", "subscribe", "back to top",
-        ]
-
-        def is_junk(text):
-            low = text.lower()
-            return any(p in low for p in junk_patterns)
-
         found = set()
 
+        # Pass 1 — anchor tags (most reliable for job titles)
         for a_tag in soup.find_all("a"):
-            text = a_tag.get_text(strip=True)
-            if keyword_match(text) and 12 < len(text) < 130 and not is_junk(text):
-                found.add(text)
+            raw = a_tag.get_text(strip=True)
+            title = clean_title(raw)
+            if is_real_job_title(title):
+                found.add(title)
 
+        # Pass 2 — headings/list items if Pass 1 found nothing
         if not found:
             for tag in soup.find_all(["h1", "h2", "h3", "h4", "li", "span", "div"]):
-                text = tag.get_text(strip=True)
-                if keyword_match(text) and 12 < len(text) < 130 and not is_junk(text):
-                    if text.count(" ") < 18:
-                        found.add(text)
+                raw = tag.get_text(strip=True)
+                title = clean_title(raw)
+                if is_real_job_title(title):
+                    found.add(title)
 
         return [{
             "title": title,
@@ -708,6 +807,12 @@ def run():
         try:
             jobs = scrape_company(company, url, ats_type, hyd_office)
             for job in jobs:
+                # Clean title and apply both filters before saving
+                job["title"] = clean_title(job["title"])
+                if not is_real_job_title(job["title"]):
+                    continue
+                if not is_hyderabad_relevant(job, hyd_office):
+                    continue
                 jid = job_id(company, job["title"], job["url"])
                 if jid not in state:
                     state[jid] = {
