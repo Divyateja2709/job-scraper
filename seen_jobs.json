@@ -1138,5 +1138,195 @@
     "company": "Boeing",
     "title": "Program Protection Product Security Analyst",
     "seen_at": "2026-07-02T09:05:23.562293"
+  },
+  "7ca1278a86de5cc6b1aee70917774197": {
+    "company": "Nvidia",
+    "title": "Understanding of SOC and System Architecture.",
+    "seen_at": "2026-07-02T13:26:52.714457"
+  },
+  "0aed1121feb7032e6aa5558a1e07d683": {
+    "company": "Zscaler",
+    "title": "Staff Threat Researcher",
+    "seen_at": "2026-07-02T13:31:19.273853"
+  },
+  "eaf6cf858d5dd193fd06fce10c1ece8e": {
+    "company": "Zscaler",
+    "title": "Software Development Engineer (DevSecOps)",
+    "seen_at": "2026-07-02T13:31:19.273873"
+  },
+  "abb079e4d3093fe6bec99801e50d437e": {
+    "company": "Sophos",
+    "title": "Threat Analyst 2 (Romania - shift schedule)Remote",
+    "seen_at": "2026-07-02T13:31:34.692779"
+  },
+  "1768e278cca42c458853c5a483451827": {
+    "company": "Sophos",
+    "title": "Threat Research and Engineering (SophosLabs)",
+    "seen_at": "2026-07-02T13:31:34.692809"
+  },
+  "66682d5d0a329c1074d3e09b1a47880c": {
+    "company": "Sophos",
+    "title": "Senior Identity EngineerRemote",
+    "seen_at": "2026-07-02T13:31:34.692867"
+  },
+  "c577adc7aa26b836611f256b0f33b88a": {
+    "company": "Sophos",
+    "title": "Threat Analyst 2 (Romania)Remote",
+    "seen_at": "2026-07-02T13:31:34.692936"
+  },
+  "7bc354cc917643a52db2bb050600f0bb": {
+    "company": "Sophos",
+    "title": "Senior Incident Response Consultant 2Remote",
+    "seen_at": "2026-07-02T13:31:34.692985"
+  },
+  "4a7054fcd91ede8978d93162b89d299e": {
+    "company": "Sophos",
+    "title": "Senior Software Engineer - AI SecurityRemote",
+    "seen_at": "2026-07-02T13:31:34.693018"
+  },
+  "644b3ed44e46a713879125a627fe768e": {
+    "company": "Cisco",
+    "title": "Federal Civilian Security Account Executive - Architecture",
+    "seen_at": "2026-07-02T13:31:50.842953"
+  },
+  "7fcf452fb6b3ca0d2c6847fb9f156652": {
+    "company": "Cisco",
+    "title": "1444179 Customer Delivery Consulting Engineer - Security",
+    "seen_at": "2026-07-02T13:31:50.842975"
+  },
+  "75154cf9c9c3f4c4b739ef71e077c7a1": {
+    "company": "Splunk",
+    "title": "Federal Civilian Security Account Executive - Architecture",
+    "seen_at": "2026-07-02T13:32:01.446716"
+  },
+  "a98dce755ec3cc6ef2dc017147dc92dd": {
+    "company": "Splunk",
+    "title": "1444179 Customer Delivery Consulting Engineer - Security",
+    "seen_at": "2026-07-02T13:32:01.446739"
+  },
+  "8aaf106c2a4200613487b5f6f1b56918": {
+    "company": "JPMorgan",
+    "title": "Categories0SoftwareEngineering(18)InfrastructureEngineering(9)Compliance & Ops RiskTesting(6)Architecture(3)CCORFoundation(3)Development(2)PredictiveScience(1)ProductManagement(1)FundServicing(1)Program & ProjectManagement(1)CCOR LOB/CF/CountryCoverage(1)SecurityEngineering(1)TechnologySupport(1)",
+    "seen_at": "2026-07-02T13:33:41.931492"
+  },
+  "62a23329e8012bf2bf311624a4c82860": {
+    "company": "JPMorgan",
+    "title": "SoftwareEngineering(18)InfrastructureEngineering(9)Compliance & Ops RiskTesting(6)Architecture(3)CCORFoundation(3)Development(2)PredictiveScience(1)ProductManagement(1)FundServicing(1)Program & ProjectManagement(1)CCOR LOB/CF/CountryCoverage(1)SecurityEngineering(1)TechnologySupport(1)",
+    "seen_at": "2026-07-02T13:33:41.931624"
+  },
+  "f95c884f128f8b49d56f986a74418224": {
+    "company": "Wells Fargo",
+    "title": "Senior Information Security Engineer",
+    "seen_at": "2026-07-02T13:34:46.376656"
+  },
+  "78f5f767ef4d4fef51e7348ef7b4dfb5": {
+    "company": "Tide",
+    "title": "Regulatory Risk & Compliance Lead (Fixed-Term Contract)",
+    "seen_at": "2026-07-02T13:37:02.040510"
+  },
+  "7ffb92981412317483b8ee1c498ef4de": {
+    "company": "IBM",
+    "title": "SecurityApplication Developer-SAP UX",
+    "seen_at": "2026-07-02T13:37:33.855601"
+  },
+  "1cede530b63a19cb6b94638fe84bb2e5": {
+    "company": "IBM",
+    "title": "SecurityApplication Developer-Azure Cloud Fullstack",
+    "seen_at": "2026-07-02T13:37:33.855620"
+  },
+  "574b3659fb013329c3034eedfae80421": {
+    "company": "IBM",
+    "title": "SecuritySecurity Architect",
+    "seen_at": "2026-07-02T13:37:33.855633"
+  },
+  "ede40c3792c5411a352c98173b7353dd": {
+    "company": "IBM",
+    "title": "SecurityPackage Specialist-SAP Application Security",
+    "seen_at": "2026-07-02T13:37:33.855647"
+  },
+  "83f25750548e1b4de23d142960ffbe22": {
+    "company": "IBM",
+    "title": "SecuritySecurity Architect-Security Solution Design",
+    "seen_at": "2026-07-02T13:37:33.855660"
+  },
+  "dcab327d4c98db9a9f449c159703cd41": {
+    "company": "IBM",
+    "title": "SecuritySecurity Specialist-Infrastructure Security",
+    "seen_at": "2026-07-02T13:37:33.855673"
+  },
+  "fdfd1376b574a8be35c057cea92f4fdb": {
+    "company": "Accenture",
+    "title": "Job:Procurement Operations AssociateJob Number:AIOC-S01651886",
+    "seen_at": "2026-07-02T13:38:57.280478"
+  },
+  "9431e0a902917553d6941f9a7cb97cbf": {
+    "company": "Accenture",
+    "title": "Job:Procurement Operations Associate",
+    "seen_at": "2026-07-02T13:38:57.280497"
+  },
+  "78ea68ec3297af143d46dd63ed519de9": {
+    "company": "Accenture",
+    "title": "Procurement Operations Associate",
+    "seen_at": "2026-07-02T13:38:57.280510"
+  },
+  "e08694e1655aa4214333be188ecd1418": {
+    "company": "Accenture",
+    "title": "Procurement Operations AssociateExpand job detailsGurugram",
+    "seen_at": "2026-07-02T13:38:57.280523"
+  },
+  "a0f1231662190eb35ab495b03d8aa875": {
+    "company": "Deloitte",
+    "title": "Security Engineer III, Splunk Content Engineer (Secret Clearance)",
+    "seen_at": "2026-07-02T13:39:10.938829"
+  },
+  "b0e32caec59b8e4cef506dcd5afdaa2b": {
+    "company": "Deloitte",
+    "title": "Cyber Oracle Cloud Security \u2013 Manager / Engineering Manager II",
+    "seen_at": "2026-07-02T13:39:10.938870"
+  },
+  "74620b50591aa3b9f490bc24c4b0c656": {
+    "company": "Deloitte",
+    "title": "Security Manager / FDO | TS/SCI Clearance Required",
+    "seen_at": "2026-07-02T13:39:10.938897"
+  },
+  "6ca2135978c971126b2af2ad3a06611b": {
+    "company": "Walmart",
+    "title": "Stocking Team AssociateNeighborhood Market #7220",
+    "seen_at": "2026-07-02T13:40:46.632311"
+  },
+  "038350f6a7afa3fd897e0645a8bf9af5": {
+    "company": "Walmart",
+    "title": "Meat/Produce Team Associate",
+    "seen_at": "2026-07-02T13:40:46.632367"
+  },
+  "3d6c5bec852144e868448e7be1581eb5": {
+    "company": "Walmart",
+    "title": "Meat/Produce Team AssociateWM Supercenter #7178",
+    "seen_at": "2026-07-02T13:40:46.632380"
+  },
+  "48831a97d3359577178d59bf079668f7": {
+    "company": "Walmart",
+    "title": "Stocking Team Associate",
+    "seen_at": "2026-07-02T13:40:46.632401"
+  },
+  "c9eb5a6de05739a9ae1b4e1c305366b3": {
+    "company": "Providence",
+    "title": "Lead Security GRC Analyst",
+    "seen_at": "2026-07-02T13:44:13.515132"
+  },
+  "82b31b9abf60f89f04f74dc04f6ec9c1": {
+    "company": "Bank of America",
+    "title": "Associate - Sales",
+    "seen_at": "2026-07-02T13:44:36.536931"
+  },
+  "e1c9954dc76e100401e3143c7597eeb8": {
+    "company": "Citi",
+    "title": "Syndicated Loan Operations Intermediate Associate Analyst",
+    "seen_at": "2026-07-02T13:45:00.800142"
+  },
+  "1665c8f0892c5476bb552b1d51c2631d": {
+    "company": "Moody's",
+    "title": "Cybersecurity Engineer - Privileged Access Management",
+    "seen_at": "2026-07-02T13:46:06.690865"
   }
 }
