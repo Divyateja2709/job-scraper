@@ -1528,5 +1528,55 @@
     "company": "Nike",
     "title": "Part Time Athlete (Retail Associate) - Nike, Adelaide",
     "seen_at": "2026-07-03T09:10:42.219001"
+  },
+  "ba2bfa73d999ed0bcce31438ed6ac8eb": {
+    "company": "JPMorgan",
+    "title": "Categories0SoftwareEngineering(17)InfrastructureEngineering(12)Compliance & Ops RiskTesting(6)Architecture(3)CCORFoundation(3)Development(2)PredictiveScience(1)ControlOfficers(1)ProductManagement(1)FundServicing(1)Program & ProjectManagement(1)CCOR LOB/CF/CountryCoverage(1)SecurityEngineering(1)User ExperienceDesign(1)TechnologySupport(1)",
+    "seen_at": "2026-07-03T13:38:36.529513"
+  },
+  "dcc1f12ad46df2157e960a561fd56077": {
+    "company": "JPMorgan",
+    "title": "SoftwareEngineering(17)InfrastructureEngineering(12)Compliance & Ops RiskTesting(6)Architecture(3)CCORFoundation(3)Development(2)PredictiveScience(1)ControlOfficers(1)ProductManagement(1)FundServicing(1)Program & ProjectManagement(1)CCOR LOB/CF/CountryCoverage(1)SecurityEngineering(1)User ExperienceDesign(1)TechnologySupport(1)",
+    "seen_at": "2026-07-03T13:38:36.529563"
+  },
+  "f4cffe4a34b6e5cc46dfe2d6e653b1a0": {
+    "company": "HSBC",
+    "title": "Regulatory Operations Lead/ Senior Associate Director, Control Manager",
+    "seen_at": "2026-07-03T13:39:34.640825"
+  },
+  "b0e3d1bcc8bbde9e40ff2b58daa1d511": {
+    "company": "IBM",
+    "title": "SecurityEnterprise Operations(205)Software Engineering(80)Consulting(63)Infrastructure & Technology(50)Data & Analytics(10)Project Management(2)View all",
+    "seen_at": "2026-07-03T13:42:32.010576"
+  },
+  "a0be2e79b467fa0269bed25ceba2e656": {
+    "company": "IBM",
+    "title": "SecurityEnterprise Operations(205)Software Engineering(80)Consulting(63)Infrastructure & Technology(50)Data & Analytics(10)Project Management(2)",
+    "seen_at": "2026-07-03T13:42:32.010595"
+  },
+  "c2862073a3d4de336a0a187b5479991e": {
+    "company": "IBM",
+    "title": "Career AreasSecurityEnterprise Operations(205)Software Engineering(80)Consulting(63)Infrastructure & Technology(50)Data & Analytics(10)Project Management(2)View all",
+    "seen_at": "2026-07-03T13:42:32.010612"
+  },
+  "0695010975c295ad738ee914b210a038": {
+    "company": "Deloitte",
+    "title": "Security Engineer III (Pen Tester)",
+    "seen_at": "2026-07-03T13:44:39.484368"
+  },
+  "c6f534b7d8c19b9dc3643daba9056d15": {
+    "company": "Citi",
+    "title": "\ub300\uae30\uc5c5\uc2ec\uc0ac\ubd80 \uc2ec\uc0ac\uc5ed(ICG Credit Risk Senior Officer)",
+    "seen_at": "2026-07-03T13:51:19.258157"
+  },
+  "f44901f263f62472af5373169ca27312": {
+    "company": "Moody's",
+    "title": "Associate Director - Customer Success Management (Catastrophe Risk Management)",
+    "seen_at": "2026-07-03T13:52:23.376063"
+  },
+  "323d8cf3ffc9cb9feee2e2e6cb852495": {
+    "company": "Nike",
+    "title": "Lead Retail Associate",
+    "seen_at": "2026-07-03T13:57:53.159624"
   }
 }
