@@ -1578,5 +1578,90 @@
     "company": "Nike",
     "title": "Lead Retail Associate",
     "seen_at": "2026-07-03T13:57:53.159624"
+  },
+  "49aea97dc0e4e7c287c299f8d089a56a": {
+    "company": "JPMorgan",
+    "title": "SoftwareEngineering(17)InfrastructureEngineering(13)Compliance & Ops RiskTesting(6)Architecture(3)CCORFoundation(3)Development(2)PredictiveScience(1)ControlOfficers(1)ProductManagement(1)FundServicing(1)Program & ProjectManagement(1)CCOR LOB/CF/CountryCoverage(1)SecurityEngineering(1)User ExperienceDesign(1)TechnologySupport(1)",
+    "seen_at": "2026-07-03T19:06:38.677815"
+  },
+  "3c77d24de8552499031544412285d40a": {
+    "company": "JPMorgan",
+    "title": "Categories0SoftwareEngineering(17)InfrastructureEngineering(13)Compliance & Ops RiskTesting(6)Architecture(3)CCORFoundation(3)Development(2)PredictiveScience(1)ControlOfficers(1)ProductManagement(1)FundServicing(1)Program & ProjectManagement(1)CCOR LOB/CF/CountryCoverage(1)SecurityEngineering(1)User ExperienceDesign(1)TechnologySupport(1)",
+    "seen_at": "2026-07-03T19:06:38.677842"
+  },
+  "90aa84926b7b7bef8461c06016196b66": {
+    "company": "IBM",
+    "title": "SecurityEnterprise Operations(206)Software Engineering(78)Consulting(61)Infrastructure & Technology(49)Data & Analytics(11)Project Management(2)",
+    "seen_at": "2026-07-03T19:10:32.841265"
+  },
+  "61ad2e5d10743439a44e7406e8aa8f72": {
+    "company": "IBM",
+    "title": "Career AreasSecurityEnterprise Operations(206)Software Engineering(78)Consulting(61)Infrastructure & Technology(49)Data & Analytics(11)Project Management(2)View all",
+    "seen_at": "2026-07-03T19:10:32.841290"
+  },
+  "fb590a371c34232af144826756981c0a": {
+    "company": "IBM",
+    "title": "SecurityEnterprise Operations(206)Software Engineering(78)Consulting(61)Infrastructure & Technology(49)Data & Analytics(11)Project Management(2)View all",
+    "seen_at": "2026-07-03T19:10:32.841306"
+  },
+  "c54357bd634fd973843f98b0073f9c8a": {
+    "company": "Citi",
+    "title": "9900602 Cyber_Security Operations Global",
+    "seen_at": "2026-07-03T19:18:53.582879"
+  },
+  "4cb51a5d9e065865adb173378fdd5882": {
+    "company": "Citi",
+    "title": "29550 Transformation Risk & Controls Operations",
+    "seen_at": "2026-07-03T19:18:53.582901"
+  },
+  "c31d24250cc0941eeb43136c787fdb5a": {
+    "company": "Citi",
+    "title": "29549 Risk & Controls Operations",
+    "seen_at": "2026-07-03T19:18:53.582915"
+  },
+  "49e263bbeccec33569fc0f2fb823725b": {
+    "company": "Citi",
+    "title": "30646 Product Coverage Risk & Controls Operations - EnterpriseRisk",
+    "seen_at": "2026-07-03T19:18:53.582931"
+  },
+  "1568bec14bdbdddb671529ecd121fc62": {
+    "company": "Citi",
+    "title": "5212 ICRM - International Compliance",
+    "seen_at": "2026-07-03T19:18:53.582942"
+  },
+  "ab5c36e5372443e197543a20b925842e": {
+    "company": "Citi",
+    "title": "9921641 Risk & Control Operations",
+    "seen_at": "2026-07-03T19:18:53.582955"
+  },
+  "db8cbaddfd7f302bbd5b4b8d25c0e23a": {
+    "company": "Citi",
+    "title": "9923956 Cyber_Cloud Architecture & Systems Engineering",
+    "seen_at": "2026-07-03T19:18:53.582966"
+  },
+  "6b1038a740205e22e8946ddecab8f028": {
+    "company": "Citi",
+    "title": "28304 CCB Analyst & Associate Program",
+    "seen_at": "2026-07-03T19:18:53.582976"
+  },
+  "f897406da31d05e2d11f7431a386b3f5": {
+    "company": "Citi",
+    "title": "24412 Security Operations Center",
+    "seen_at": "2026-07-03T19:18:53.582989"
+  },
+  "6a3abfb080ad13159523ef64345fd255": {
+    "company": "Citi",
+    "title": "41534 Cyber Security Operations Global",
+    "seen_at": "2026-07-03T19:18:53.583000"
+  },
+  "982964c592e86392f03b156ad94e9829": {
+    "company": "Citi",
+    "title": "41099 Legal Operations and Technology IP and Cyber",
+    "seen_at": "2026-07-03T19:18:53.583012"
+  },
+  "719fcc4f367530af83a42368e7e1a20e": {
+    "company": "Citi",
+    "title": "9900901 Banking and International Risk",
+    "seen_at": "2026-07-03T19:18:53.583025"
   }
 }
