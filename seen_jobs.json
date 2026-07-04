@@ -1763,5 +1763,40 @@
     "company": "Citi",
     "title": "Credit Risk Senior Analyst",
     "seen_at": "2026-07-04T02:05:27.084587"
+  },
+  "4d6b254aba7aa98e9b06cfcad6b9d9ba": {
+    "company": "JPMorgan",
+    "title": "SoftwareEngineering(17)InfrastructureEngineering(13)Compliance & Ops RiskTesting(6)Architecture(3)CCORFoundation(3)Development(2)ControlOfficers(1)ProductManagement(1)FundServicing(1)Program & ProjectManagement(1)CCOR LOB/CF/CountryCoverage(1)SecurityEngineering(1)User ExperienceDesign(1)TechnologySupport(1)",
+    "seen_at": "2026-07-04T08:27:25.074966"
+  },
+  "057daed3449c9badd4c2bdc908f42ace": {
+    "company": "JPMorgan",
+    "title": "Categories0SoftwareEngineering(17)InfrastructureEngineering(13)Compliance & Ops RiskTesting(6)Architecture(3)CCORFoundation(3)Development(2)ControlOfficers(1)ProductManagement(1)FundServicing(1)Program & ProjectManagement(1)CCOR LOB/CF/CountryCoverage(1)SecurityEngineering(1)User ExperienceDesign(1)TechnologySupport(1)",
+    "seen_at": "2026-07-04T08:27:25.075022"
+  },
+  "9ba23d788b3aac109180a8f6affdfb66": {
+    "company": "IBM",
+    "title": "SecurityEnterprise Operations(190)Software Engineering(69)Consulting(58)Infrastructure & Technology(49)Data & Analytics(11)Project Management(2)",
+    "seen_at": "2026-07-04T08:31:14.388614"
+  },
+  "b258ba6c1654f29d84fc48944c8ee11d": {
+    "company": "IBM",
+    "title": "SecurityEnterprise Operations(190)Software Engineering(69)Consulting(58)Infrastructure & Technology(49)Data & Analytics(11)Project Management(2)View all",
+    "seen_at": "2026-07-04T08:31:14.388638"
+  },
+  "8a5255ee6321658a13efd899acf0538a": {
+    "company": "IBM",
+    "title": "Career AreasSecurityEnterprise Operations(190)Software Engineering(69)Consulting(58)Infrastructure & Technology(49)Data & Analytics(11)Project Management(2)View all",
+    "seen_at": "2026-07-04T08:31:14.388657"
+  },
+  "8e56a0e741a92261bac04565bcde7468": {
+    "company": "Walmart",
+    "title": "Meat/Produce Team AssociateWM Supercenter #428",
+    "seen_at": "2026-07-04T08:35:30.760554"
+  },
+  "9beb08b9e49aa6f32186dafc7d61067f": {
+    "company": "Charles Schwab",
+    "title": "Alternative Investment Senior Risk SpecialistLone Tree, CO",
+    "seen_at": "2026-07-04T08:40:09.202030"
   }
 }
