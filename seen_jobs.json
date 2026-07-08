@@ -2948,5 +2948,70 @@
     "company": "Boeing",
     "title": "Industrial Security Specialist (Mid-Level  or Senior)",
     "seen_at": "2026-07-08T01:32:19.489326"
+  },
+  "23c18791a45ce3797373c84d1949754d": {
+    "company": "Zscaler",
+    "title": "Senior Manager - Software Development Engineering - Firewall/Proxy",
+    "seen_at": "2026-07-08T08:06:34.358407"
+  },
+  "c55aa17942b0d96bcfb480fde9861779": {
+    "company": "Zscaler",
+    "title": "Staff Threat Researcher -  AI/ML",
+    "seen_at": "2026-07-08T08:06:34.358441"
+  },
+  "14ff9a4da6b16121bea47a31b22f4bba": {
+    "company": "JPMorgan",
+    "title": "Categories0SoftwareEngineering(16)InfrastructureEngineering(10)Compliance & Ops RiskTesting(6)Architecture(3)CCORFoundation(3)Development(2)PredictiveScience(1)ControlOfficers(1)ProductManagement(1)FundServicing(1)Program & ProjectManagement(1)SecurityEngineering(1)User ExperienceDesign(1)",
+    "seen_at": "2026-07-08T08:07:05.390760"
+  },
+  "6780bf6553d6060dd6957d52e23c0ced": {
+    "company": "JPMorgan",
+    "title": "SoftwareEngineering(16)InfrastructureEngineering(10)Compliance & Ops RiskTesting(6)Architecture(3)CCORFoundation(3)Development(2)PredictiveScience(1)ControlOfficers(1)ProductManagement(1)FundServicing(1)Program & ProjectManagement(1)SecurityEngineering(1)User ExperienceDesign(1)",
+    "seen_at": "2026-07-08T08:07:05.390806"
+  },
+  "5de1e46c42a813497df3f63b95b7d28b": {
+    "company": "HSBC",
+    "title": "Risk and Control Manager",
+    "seen_at": "2026-07-08T08:07:12.200595"
+  },
+  "05e1bd736e500cf02b7d76df28c6feec": {
+    "company": "Wells Fargo",
+    "title": "Securities Operations Associate-Client Onboarding",
+    "seen_at": "2026-07-08T08:07:13.341380"
+  },
+  "2d6ac194016e7d2304f46e805ac1fab7": {
+    "company": "IBM",
+    "title": "Career AreasCareer AreasSecurityEnterprise Operations(188)Software Engineering(67)Consulting(55)Infrastructure & Technology(47)Data & Analytics(11)Sales(4)View all",
+    "seen_at": "2026-07-08T08:08:22.283982"
+  },
+  "4a478dd38e129c98ebffd533eaf60970": {
+    "company": "IBM",
+    "title": "Career AreasSecurityEnterprise Operations(188)Software Engineering(67)Consulting(55)Infrastructure & Technology(47)Data & Analytics(11)Sales(4)View all",
+    "seen_at": "2026-07-08T08:08:22.284014"
+  },
+  "46977a6592266f5fa30e1a55311c05c8": {
+    "company": "IBM",
+    "title": "SecurityEnterprise Operations(188)Software Engineering(67)Consulting(55)Infrastructure & Technology(47)Data & Analytics(11)Sales(4)View all",
+    "seen_at": "2026-07-08T08:08:22.284034"
+  },
+  "22a72c4e3aad18495972df7aeff54eb1": {
+    "company": "IBM",
+    "title": "SecurityEnterprise Operations(188)Software Engineering(67)Consulting(55)Infrastructure & Technology(47)Data & Analytics(11)Sales(4)",
+    "seen_at": "2026-07-08T08:08:22.284049"
+  },
+  "4dcc0d3365cd974fa822f2e8365b428f": {
+    "company": "Walmart",
+    "title": "Checkout Team AssociateWM Supercenter #4200",
+    "seen_at": "2026-07-08T08:09:47.557325"
+  },
+  "bb388327a245ac73e876d7d3e8ee8d80": {
+    "company": "Walmart",
+    "title": "Asset Protection AssociateNeighborhood Market #5255",
+    "seen_at": "2026-07-08T08:09:47.557355"
+  },
+  "7816c57d19fbc431e4ed7be0cc53cb41": {
+    "company": "S&P Global",
+    "title": "Application & Cloud Security Lead",
+    "seen_at": "2026-07-08T08:12:08.065119"
   }
 }
