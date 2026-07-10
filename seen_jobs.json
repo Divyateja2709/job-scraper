@@ -3758,5 +3758,95 @@
     "company": "Nike",
     "title": "Retail Associate, SEAS - Nike Crocker Park",
     "seen_at": "2026-07-10T01:38:25.927969"
+  },
+  "61703dd16884fa1d63f40a06488285b4": {
+    "company": "Qualcomm",
+    "title": "Engineer-product security",
+    "seen_at": "2026-07-10T08:58:30.602637"
+  },
+  "7a6ed006cfa725ce69939e82f93e726f": {
+    "company": "Qualcomm",
+    "title": "Senior Engineer - AI Agentic Fuzzing & Linux Security",
+    "seen_at": "2026-07-10T08:58:30.602710"
+  },
+  "702c38631ee198bd31daa5dcd71afa39": {
+    "company": "Zscaler",
+    "title": "RemoteIndiaPrincipal AI Security SpecialistAI SecurityLearn more",
+    "seen_at": "2026-07-10T09:00:00.128394"
+  },
+  "ce32622e51d040c0f49b0f122e11c61b": {
+    "company": "Zscaler",
+    "title": "Principal AI Security Specialist",
+    "seen_at": "2026-07-10T09:00:00.128421"
+  },
+  "e40b109e37397f5b2e2c38fcd7500032": {
+    "company": "JPMorgan",
+    "title": "Categories0SoftwareEngineering(16)InfrastructureEngineering(7)Compliance & Ops RiskTesting(6)Architecture(4)CCORFoundation(4)PredictiveScience(2)Development(2)BusinessAnalysis(1)ControlOfficers(1)ProductManagement(1)FundServicing(1)Program & ProjectManagement(1)User ExperienceDesign(1)Technical ProgramDelivery(1)",
+    "seen_at": "2026-07-10T09:00:18.720514"
+  },
+  "984886b4aa88bb659b4f89691505fae0": {
+    "company": "JPMorgan",
+    "title": "SoftwareEngineering(16)InfrastructureEngineering(7)Compliance & Ops RiskTesting(6)Architecture(4)CCORFoundation(4)PredictiveScience(2)Development(2)BusinessAnalysis(1)ControlOfficers(1)ProductManagement(1)FundServicing(1)Program & ProjectManagement(1)User ExperienceDesign(1)Technical ProgramDelivery(1)",
+    "seen_at": "2026-07-10T09:00:18.720554"
+  },
+  "edf457028bcafb8d27322b5ca2dd9a98": {
+    "company": "JPMorgan",
+    "title": "RelevanceRelevancePosting DateDistanceCompliance and Ops Risk Test Specialist",
+    "seen_at": "2026-07-10T09:00:18.720575"
+  },
+  "a5761cd1360f90cb35a3cc5a7a4540b0": {
+    "company": "HSBC",
+    "title": "ITSM/Senior Associate Director",
+    "seen_at": "2026-07-10T09:00:27.785009"
+  },
+  "4b988318e2195f77730b77fa8c690ba5": {
+    "company": "HSBC",
+    "title": "Resilience Risk Senior ManagerLuxembourg,  Letzebuerg,  LuxembourgRisk and ComplianceHybrid",
+    "seen_at": "2026-07-10T09:00:27.785034"
+  },
+  "5651f7d063d81467af4005425a1c6d7d": {
+    "company": "HSBC",
+    "title": "Resilience Risk Senior Manager",
+    "seen_at": "2026-07-10T09:00:27.785049"
+  },
+  "f5c6e8f869301aa2ceb4501fd266a933": {
+    "company": "IBM",
+    "title": "Career AreasCareer AreasSecurityEnterprise Operations(212)Software Engineering(75)Infrastructure & Technology(69)Consulting(59)Data & Analytics(11)Sales(7)View all",
+    "seen_at": "2026-07-10T09:01:35.391831"
+  },
+  "d5ebe66fe27d1c5f7280279f64559085": {
+    "company": "IBM",
+    "title": "Career AreasSecurityEnterprise Operations(212)Software Engineering(75)Infrastructure & Technology(69)Consulting(59)Data & Analytics(11)Sales(7)View all",
+    "seen_at": "2026-07-10T09:01:35.391873"
+  },
+  "aa14f93af36e30251d469bd499cdc5e1": {
+    "company": "IBM",
+    "title": "SecurityEnterprise Operations(212)Software Engineering(75)Infrastructure & Technology(69)Consulting(59)Data & Analytics(11)Sales(7)View all",
+    "seen_at": "2026-07-10T09:01:35.391906"
+  },
+  "5189f0c2937bea18053e4bb53f1d45a3": {
+    "company": "IBM",
+    "title": "SecurityEnterprise Operations(212)Software Engineering(75)Infrastructure & Technology(69)Consulting(59)Data & Analytics(11)Sales(7)",
+    "seen_at": "2026-07-10T09:01:35.391932"
+  },
+  "65ca6a3573c860a0b2448b235e1f6be2": {
+    "company": "Deloitte",
+    "title": "AI Security Engineer Senior Manager",
+    "seen_at": "2026-07-10T09:01:46.961386"
+  },
+  "db9cf593057137ae4f1f776029a9d91c": {
+    "company": "LPL Financial",
+    "title": "OtherJobs(184)TechnologyJobs(63)SalesJobs(54)Service and OperationsJobs(14)Employee AdvisorJobs(7)Compliance and RiskJobs(6)MarketingJobs(4)PeopleJobs(4)StrategyJobs(4)Finance and AccountingJobs(3)Data AnalyticsJobs(2)LegalJobs(2)Project ManagementJobs(2)",
+    "seen_at": "2026-07-10T09:05:13.543501"
+  },
+  "eb716c8db9d27d740cf918d0435a9e24": {
+    "company": "Boeing",
+    "title": "Security Access Officer (Experienced)",
+    "seen_at": "2026-07-10T09:06:25.951498"
+  },
+  "d4c0c323a34d872339320fe1acf57ad5": {
+    "company": "Boeing",
+    "title": "Senior Information Security Compliance Specialist",
+    "seen_at": "2026-07-10T09:06:25.951573"
   }
 }
