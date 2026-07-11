@@ -4273,5 +4273,40 @@
     "company": "Walmart",
     "title": "Deli/Bakery Team AssociateWM Supercenter #942",
     "seen_at": "2026-07-11T12:53:44.665357"
+  },
+  "c79ecc8f77343231d1c4cbc0ecc2d77d": {
+    "company": "JPMorgan",
+    "title": "Categories0SoftwareEngineering(14)InfrastructureEngineering(7)Compliance & Ops RiskTesting(6)Architecture(4)CCORFoundation(4)PredictiveScience(2)ControlOfficers(2)Development(2)BusinessAnalysis(1)ProductManagement(1)FundServicing(1)Program & ProjectManagement(1)User ExperienceDesign(1)Technical ProgramDelivery(1)",
+    "seen_at": "2026-07-11T18:43:53.834198"
+  },
+  "fe47880788c375f15d8407feacca4607": {
+    "company": "JPMorgan",
+    "title": "SoftwareEngineering(14)InfrastructureEngineering(7)Compliance & Ops RiskTesting(6)Architecture(4)CCORFoundation(4)PredictiveScience(2)ControlOfficers(2)Development(2)BusinessAnalysis(1)ProductManagement(1)FundServicing(1)Program & ProjectManagement(1)User ExperienceDesign(1)Technical ProgramDelivery(1)",
+    "seen_at": "2026-07-11T18:43:53.834305"
+  },
+  "f8c95addc007f557570255b25af207f3": {
+    "company": "Deloitte",
+    "title": "Container Security Engineer",
+    "seen_at": "2026-07-11T18:45:26.130948"
+  },
+  "cfd7e7a57b5e8e915fe517cf35c08cdb": {
+    "company": "Walmart",
+    "title": "Entertainment Team AssociateWM Supercenter #1081",
+    "seen_at": "2026-07-11T18:46:41.362017"
+  },
+  "9cc3ab799b0fea9b68faa7fea7ab1bf6": {
+    "company": "Walmart",
+    "title": "Remodel Team AssociateWM Supercenter #1087",
+    "seen_at": "2026-07-11T18:46:41.362044"
+  },
+  "d3b5582023e6ffa2749a31e7233d2ecc": {
+    "company": "Walmart",
+    "title": "Fashion Team AssociateWM Supercenter #1087",
+    "seen_at": "2026-07-11T18:46:41.362063"
+  },
+  "bc3ca50dd9e52861b9c4cdde8ddc36ba": {
+    "company": "Nike",
+    "title": "Retail Associate, SEAS - Nike Aventura (0-40 hours/week)",
+    "seen_at": "2026-07-11T18:49:49.558329"
   }
 }
