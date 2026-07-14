@@ -4933,5 +4933,55 @@
     "company": "Nike",
     "title": "Retail Associate, SEAS - Nike St Augustine (14-29 hours/week)",
     "seen_at": "2026-07-14T07:51:47.114176"
+  },
+  "24885bdbd17dd7bd46b830586c729883": {
+    "company": "Intel",
+    "title": "SOC Design Verification Engineer",
+    "seen_at": "2026-07-14T13:02:48.512878"
+  },
+  "0e2585df80efa21b0f193ac7d93872e0": {
+    "company": "Zscaler",
+    "title": "Staff Threat Researcher -  Agentic AI/Gen AI/ML",
+    "seen_at": "2026-07-14T13:04:18.795668"
+  },
+  "a351c7ea8cc0dee2af9ab6fb9c4c428b": {
+    "company": "JPMorgan",
+    "title": "Categories0SoftwareEngineering(17)Compliance & Ops RiskTesting(7)InfrastructureEngineering(6)CCORFoundation(4)Architecture(3)PredictiveScience(3)ControlOfficers(2)Development(2)ProductManagement(1)FundServicing(1)Program & ProjectManagement(1)",
+    "seen_at": "2026-07-14T13:04:41.429027"
+  },
+  "8b5ebf2595b3549db0950e8dc9be6cb9": {
+    "company": "JPMorgan",
+    "title": "SoftwareEngineering(17)Compliance & Ops RiskTesting(7)InfrastructureEngineering(6)CCORFoundation(4)Architecture(3)PredictiveScience(3)ControlOfficers(2)Development(2)ProductManagement(1)FundServicing(1)Program & ProjectManagement(1)",
+    "seen_at": "2026-07-14T13:04:41.429067"
+  },
+  "ed8bfbf411e50c5a4ba43008434abe60": {
+    "company": "Infosys",
+    "title": "SAP _ABAP, FICO, BASIS, GRC, Security,PP,QM Consultant",
+    "seen_at": "2026-07-14T13:05:41.877607"
+  },
+  "51b56fe88fc2577d27d43903cc9b8a9a": {
+    "company": "IBM",
+    "title": "SecurityApplication Database Administrator-RDBMS",
+    "seen_at": "2026-07-14T13:05:49.124615"
+  },
+  "51b41a070ce87937c11b6519f8fcf7ab": {
+    "company": "AT&T",
+    "title": "Specialist Cybersecurity",
+    "seen_at": "2026-07-14T13:07:08.114575"
+  },
+  "dc0073b77b7f07b5c0a79d2b9524739e": {
+    "company": "Walmart",
+    "title": "Online Order Filling Team AssociateWM Supercenter #1327",
+    "seen_at": "2026-07-14T13:07:20.218466"
+  },
+  "c7cb928b082d26b0139213fd5d09c589": {
+    "company": "Walmart",
+    "title": "Food/Consumables Team AssociateWM Supercenter #1432",
+    "seen_at": "2026-07-14T13:07:20.218500"
+  },
+  "cfdb5a2a8123d495b95f6531410ffda9": {
+    "company": "Walmart",
+    "title": "Deli/Bakery Team AssociateWM Supercenter #1288",
+    "seen_at": "2026-07-14T13:07:20.218525"
   }
 }
