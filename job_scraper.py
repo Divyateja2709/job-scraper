@@ -2,916 +2,735 @@
 # filename: job_scraper.py
 
 """
-Security Job Alert Scraper — Hyderabad Edition
-==============================================
-URLs sourced directly from actual company career portals.
-Keywords: security, cybersecurity, threat
-Run: python job_scraper.py
-Dry run (no email): DRY_RUN=true python job_scraper.py
+Security Job Alert Scraper — Full 110-Company Edition
+======================================================
+Runs on GitHub Actions every 6 hours. Completely FREE.
+Emails you only NEW security roles with direct clickable links.
+
+Priority in email: Hyderabad > Remote > Bangalore > Other India
+Overseas roles (US/UK/EU etc.) are silently dropped.
+
+Install:  pip install requests beautifulsoup4
+Secrets:  GMAIL_USER | GMAIL_APP_PASSWORD | GMAIL_RECEIVER
 """
 
-import os
-import json
-import re
-import smtplib
-import hashlib
-import time
-import logging
-from concurrent.futures import ThreadPoolExecutor, as_completed
+import os, json, re, smtplib, hashlib, time, logging
 from datetime import datetime, timedelta
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from logging.handlers import RotatingFileHandler
 from pathlib import Path
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from urllib.parse import urlparse
+
+import requests
+from bs4 import BeautifulSoup
 
 # ─────────────────────────────────────────────────────────────────────────────
 # CONFIG
 # ─────────────────────────────────────────────────────────────────────────────
-EMAIL_CONFIG = {
-    "sender":    os.getenv("GMAIL_USER", ""),
-    "password":  os.getenv("GMAIL_APP_PASSWORD", ""),
-    "receiver":  os.getenv("GMAIL_RECEIVER", ""),
-    "smtp_host": "smtp.gmail.com",
-    "smtp_port": 587,
+EMAIL_CFG = {
+    "sender":   os.getenv("GMAIL_USER", ""),
+    "password": os.getenv("GMAIL_APP_PASSWORD", ""),
+    "to":       os.getenv("GMAIL_RECEIVER", ""),
+    "host":     "smtp.gmail.com",
+    "port":     587,
 }
 
-# FIX 11: Dry-run mode — set DRY_RUN=true to skip sending email
-DRY_RUN = os.getenv("DRY_RUN", "false").lower() == "true"
+STATE_FILE        = "seen_jobs.json"
+STATE_EXPIRY_DAYS = 60
+MAX_WORKERS       = 8
+REQUEST_TIMEOUT   = 20
 
-SEARCH_KEYWORDS  = ["security", "cybersecurity", "threat"]
-STATE_FILE       = "seen_jobs.json"
-LOG_FILE         = "scraper.log"
-STATE_EXPIRY_DAYS = 90          # FIX 4: TTL for seen_jobs
-MAX_WORKERS       = 5           # FIX 5: parallel scraping (keep low for GH Actions)
-PLAYWRIGHT_WAIT   = 6000        # FIX 9: ms to wait after page load (was 2500)
-
-# ─────────────────────────────────────────────────────────────────────────────
-# FILTERS
-# ─────────────────────────────────────────────────────────────────────────────
-CYBER_KEYWORDS = {
-    "security", "cybersecurity", "cyber", "threat", "vulnerability",
-    "penetration", "pentest", "soc", "siem", "forensic", "malware",
-    "incident response", "devsecops", "appsec", "cloudsec", "infosec",
-    "zero trust", "iam", "identity", "grc", "compliance", "risk",
-    "encryption", "firewall", "intrusion", "detection", "red team",
-    "blue team", "purple team", "sast", "dast", "offensive", "defensive",
-}
-
-ROLE_WORDS = {
-    "engineer", "analyst", "architect", "manager", "director", "consultant",
-    "specialist", "researcher", "lead", "head", "officer", "associate",
-    "senior", "staff", "principal", "vp", "intern", "administrator",
-    "scientist", "advisor", "expert", "technician", "operations", "developer",
-    "coordinator", "strategist", "program manager", "product manager",
-}
-
-REJECT_LOCATIONS = {
-    "united states", " tx,", " ca,", " mn,", " ny,", " wa,",
-    "westlake", "southlake", "eden prairie",
-    "united kingdom", "canada", "australia", "romania", "portugal",
-    "japan", "china", "germany", "france", "singapore", "ireland",
-    "cork", "poland", "guangzhou", "new york", "san francisco",
-    "seattle", "london", "amsterdam",
-}
-
-# ─────────────────────────────────────────────────────────────────────────────
-# COMPANY REGISTRY
-# ─────────────────────────────────────────────────────────────────────────────
-COMPANIES = {
-
-    # ── Big Tech ──────────────────────────────────────────────────────────────
-    "Google": (
-        "https://www.google.com/about/careers/applications/jobs/results?location=Hyderabad%2C India&has_remote=true&q=security",
-        "own", True),
-    "Microsoft": (
-        "https://apply.careers.microsoft.com/careers?query=security&start=0&location=Hyderabad%2C++TS%2C++India&sort_by=relevance&filter_distance=160&filter_include_remote=1",
-        "own", True),
-    "Meta": (
-        "https://www.metacareers.com/jobsearch/?teams[0]=Security&offices[0]=Hyderabad%2C India&roles[0]=Full time employment",
-        "own", True),
-    "Apple": (
-        "https://jobs.apple.com/en-in/search?location=india-INDC+hyderabad-HY1&key=security",
-        "own", True),
-    "Amazon": (
-        "https://www.amazon.jobs/en-gb/search?base_query=security&loc_query=Hyderabad%2C+Telangana%2C+India&city=Hyderabad&county=Hyderabad&region=Telangana&country=IND&latitude=17.3949&longitude=78.47081&radius=24km",
-        "own", True),
-    "GitHub": (
-        "https://www.github.careers/careers-home/jobs?keywords=security&locations=,,India&page=1",
-        "own", False),
-
-    # ── Semiconductors ────────────────────────────────────────────────────────
-    "Nvidia": (
-        "https://jobs.nvidia.com/careers?query=security&start=0&location=Hyderabad%2C++Telangana%2C++India&sort_by=relevance&filter_distance=160&filter_include_remote=1",
-        "own", True),
-    "Qualcomm": (
-        "https://careers.qualcomm.com/careers?query=security&start=0&location=Hyderabad%2C+TS%2C+India&sort_by=relevance&filter_distance=80&filter_include_remote=0",
-        "own", True),
-    "AMD": (
-        "https://careers.amd.com/careers-home/jobs?keywords=security&location=Hyderabad%2C+Telangana%2C+India&woe=7&regionCode=IN&stretchUnit=MILES&stretch=10&sortBy=relevance&page=1",
-        "own", True),
-    "Intel": (
-        "https://intel.wd1.myworkdayjobs.com/External?q=security&locations=1e4a4eb3adf101f44070f976bf8184cf",
-        "workday", True),
-    "Micron Technology": (
-        "https://micron.eightfold.ai/careers?domain=micron.com&query=security&start=0&location=Hyderabad%2C++TS%2C++India&sort_by=relevance&filter_distance=80&filter_include_remote=1",
-        "eightfold", True),
-    "Silicon Labs": (
-        "https://silabs.wd1.myworkdayjobs.com/SiliconlabsCareers?q=security&locationCountry=c4f78be1a8f14da0ab49ce1162348a5e&locations=15081e9a5f8e01a7c343745ac500ce04",
-        "workday", True),
-
-    # ── Enterprise SaaS ───────────────────────────────────────────────────────
-    "Salesforce": (
-        "https://www.salesforce.com/company/careers/jobs/?location=Hyderabad&search=security&page=1",
-        "own", True),
-    "ServiceNow": (
-        "https://careers.servicenow.com/jobs/?search=security&country=India&region=Telangana&location=Hyderabad&origin=global",
-        "own", True),
-    "Atlassian": (
-        "https://www.atlassian.com/company/careers/all-jobs?team=Security&location=India&search=",
-        "own", True),
-    "Adobe": (
-        "https://adobe.wd5.myworkdayjobs.com/external_experienced?q=security&locationCountry=IN",
-        "workday", True),
-    "Oracle": (
-        "https://careers.oracle.com/en/sites/jobsearch/jobs?keyword=security&location=HYDERABAD%2C+TELANGANA%2C+India&locationId=300001842985230&locationLevel=city&mode=location&radius=25&radiusUnit=MI",
-        "own", True),
-    "SAP": (
-        "https://jobs.sap.com/search/?createNewAlert=false&q=security&locationsearch=Hyderabad",
-        "own", True),
-    "VMware/Broadcom": (
-        "https://careers.broadcom.com/jobs?q=security+cybersecurity&location=Hyderabad%2C+Telangana%2C+India",
-        "own", True),
-    "Pegasystems": (
-        "https://www.pega.com/about/careers/search?q=security&location=Hyderabad",
-        "own", True),
-    "Zoho": (
-        "https://careers.zohocorp.com/jobs/Careers?search=security",
-        "own", True),
-    "Intuit": (
-        "https://jobs.intuit.com/search-jobs/security/India/27595/1/2/1269750/22/79/0/2",
-        "own", True),
-    "Freshworks": (
-        "https://careers.freshworks.com/jobs?query=security&location=Hyderabad%2C+Telangana%2C+India",
-        "own", True),
-    "Gainsight": (
-        "https://gainsight.wd5.myworkdayjobs.com/Gainsight_External_Careers?q=security&locations=e33bd8017cf71001bd06d95a7e730000",
-        "workday", True),
-    "GitLab": (
-        "https://job-boards.greenhouse.io/gitlab?q=security",
-        "greenhouse", False),
-
-    # ── Cybersecurity ─────────────────────────────────────────────────────────
-    "Palo Alto Networks": (
-        "https://jobs.paloaltonetworks.com/en/search-jobs/security/Hyderabad%2C Telangana/47263/1/4/1269750-1254788-1269844-1269843/17x38405/78x45636/50/2",
-        "own", True),
-    "CrowdStrike": (
-        "https://crowdstrike.wd5.myworkdayjobs.com/en-GB/crowdstrikecareers?q=security&locationCountry=c4f78be1a8f14da0ab49ce1162348a5e",
-        "workday", True),
-    "Zscaler": (
-        "https://www.zscaler.com/careers/search?q=security&office=india",
-        "own", True),
-    "SentinelOne": (
-        "https://www.sentinelone.com/jobs/?search=security&l=India",
-        "own", True),
-    "Sophos": (
-        "https://jobs.sophos.com/search?q=security&l=Hyderabad",
-        "own", True),
-    "Akamai": (
-        "https://www.akamai.com/careers/job-search?q=security&location=India",
-        "own", True),
-
-    # ── Networking / Infra ────────────────────────────────────────────────────
-    "Cisco": (
-        "https://careers.cisco.com/global/en/search-results?keywords=security",
-        "own", True),
-    # FIX 1: Splunk had Cisco's URL — now correct
-    "Splunk": (
-        "https://jobs.cisco.com/jobs/SearchJobs/splunk%20security?listFilterMode=1&21178=21178",
-        "own", True),
-    "F5": (
-        "https://www.f5.com/company/careers/open-positions?q=security&country=India",
-        "own", True),
-
-    # ── Cloud / Data ──────────────────────────────────────────────────────────
-    "Snowflake": (
-        "https://careers.snowflake.com/us/en/search-results?keywords=security&country=India",
-        "own", True),
-    "Rubrik": (
-        "https://www.rubrik.com/company/careers/departments/information-security",
-        "own", True),
-    "DigitalOcean": (
-        "https://www.digitalocean.com/careers/open-roles?query=security&location=Hyderabad",
-        "own", True),
-    "Nutanix": (
-        "https://careers.nutanix.com/en/jobs/?search=security&pagesize=20#results",
-        "own", True),
-
-    # ── Financial Services ────────────────────────────────────────────────────
-    "Goldman Sachs": (
-        "https://higher.gs.com/results?JOB_FUNCTION=Security Engineering&LOCATION=Hyderabad&page=1&search=security&sort=RELEVANCE",
-        "own", True),
-    "JPMorgan": (
-        "https://jpmc.fa.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/jobs?keyword=security&location=Hyderabad%2C+Telangana%2C+India&locationId=300000081155702&locationLevel=city&mode=location&radius=25&radiusUnit=MI",
-        "own", True),
-    "Morgan Stanley": (
-        "https://morganstanley.eightfold.ai/careers?source=mscom&query=security&start=0&sort_by=relevance&filter_city=Mumbai%2CBengaluru",
-        "eightfold", False),
-    "HSBC": (
-        "https://portal.careers.hsbc.com/careers?query=Cybersecurity&location=India&domain=hsbc.com&sort_by=relevance",
-        "own", True),
-    "Wells Fargo": (
-        "https://www.wellsfargojobs.com/en/jobs/?search=security&location=HYDERABAD&pagesize=20#results",
-        "own", True),
-    "Vanguard": (
-        "https://www.vanguardjobs.com/job-search-results/?location=IN%2C Telangana%2C Hyderabad&keyword=cybersecurity&category[]=Technology",
-        "own", True),
-    "Invesco": (
-        "https://invesco.wd1.myworkdayjobs.com/en-GB/IVZ?q=security&locations=1804888b7f5a100128e426fb60bc0000",
-        "workday", True),
-    "FactSet": (
-        "https://www.factset.com/careers/job-search?q=security&l=Hyderabad",
-        "own", True),
-    "State Street": (
-        "https://careers.statestreet.com/global/en/search-results?m=3&keywords=security&cityStateCountry=Hyderabad%2C Telangana%2C India",
-        "own", True),
-    "Synchrony": (
-        "https://www.synchrony.com/careers/job-search.html?q=security&location=Hyderabad",
-        "own", True),
-    "Broadridge": (
-        "https://www.broadridge.com/careers/search-jobs?q=security&l=India",
-        "own", True),
-    "Stripe": (
-        "https://stripe.com/jobs/search?query=security",
-        "own", True),
-    "LSEG": (
-        "https://lseg.wd3.myworkdayjobs.com/Careers?q=security&locationCountry=c4f78be1a8f14da0ab49ce1162348a5e&primaryLocation=85fcb4c116cc1001ed602e25ce830000",
-        "workday", True),
-    "Tide": (
-        "https://job-boards.greenhouse.io/tide?keyword=security&offices[]=4052071003",
-        "greenhouse", True),
-
-    # ── IT Services ───────────────────────────────────────────────────────────
-    "IBM": (
-        "https://www.ibm.com/in-en/careers/search?field_keyword_08[0]=Security&field_keyword_05[0]=India",
-        "own", True),
-    "Wipro": (
-        "https://careers.wipro.com/careers-home/jobs?q=security&location=Hyderabad%2C+Telangana%2C+India",
-        "own", True),
-    "Infosys": (
-        "https://career.infosys.com/joblist?industryType=j&location=Hyderabad&skills=security",
-        "own", True),
-    "TCS": (
-        "https://www.tcs.com/careers/india/job-search?keyword=security&location=Hyderabad",
-        "own", True),
-    "HCLTech": (
-        "https://www.hcltech.com/careers/job-search?keyword=security&location=Hyderabad",
-        "own", True),
-    "Accenture": (
-        "https://www.accenture.com/in-en/careers/jobsearch?jq=security&jl=Hyderabad",
-        "own", True),
-    "Capgemini": (
-        "https://www.capgemini.com/in-en/careers/job-search/?search_term=security&country=India&city=Hyderabad",
-        "own", True),
-    "Deloitte": (
-        "https://apply.deloitte.com/careers/SearchJobs/security?3836=[India]&listFilterMode=1",
-        "own", True),
-    "NTT": (
-        "https://services.global.ntt/en-us/careers?q=security&location=Hyderabad",
-        "own", True),
-    "EPAM": (
-        "https://www.epam.com/careers/job-listings?search=security&city=Hyderabad",
-        "own", True),
-    "Accolite": (
-        "https://accolite.com/careers/?search=security",
-        "own", True),
-    "Darwinbox": (
-        "https://careers.darwinbox.com/jobs?q=security",
-        "own", True),
-
-    # ── Telecom ───────────────────────────────────────────────────────────────
-    "AT&T": (
-        "https://www.att.jobs/search-jobs/security/Hyderabad%2C Telangana/117/1/4/1269750-1254788-1269844-1269843/17x38405/78x45636/50/2",
-        "own", True),
-
-    # ── Fintech ───────────────────────────────────────────────────────────────
-    "GoDaddy": (
-        "https://careers.godaddy.com/jobs/search?page=1&query=security&country_codes[]=IN",
-        "own", True),
-
-    # ── Retail / Consumer ─────────────────────────────────────────────────────
-    "Walmart": (
-        "https://careers.walmart.com/results?q=security&l=Hyderabad%2C+Telangana%2C+India",
-        "own", True),
-    "Costco": (
-        "https://careers.costco.com/jobs?keywords=security&stretchUnit=MILES&stretch=10&location=Hyderabad%2C+Telangana%2C+India&woe=7&regionCode=IN",
-        "own", True),
-    "Flipkart": (
-        "https://www.flipkartcareers.com/#!/joblist?search=security",
-        "own", True),
-    "PepsiCo": (
-        "https://www.pepsicojobs.com/main/jobs?keywords=security&stretchUnit=MILES&stretch=10&location=Hyderabad%2C+Telangana%2C+India&woe=7&regionCode=IN",
-        "own", True),
-    "McDonald's": (
-        "https://careers.mcdonalds.com/jobs?filter[country][0]=IN&keyword=security&location_name=hyderabad&location_type=1",
-        "own", True),
-
-    # ── Industrial / Hardware ─────────────────────────────────────────────────
-    "Honeywell": (
-        "https://careers.honeywell.com/en/sites/Honeywell/jobs?keyword=security&location=Hyderabad%2C+Telangana%2C+India&locationId=100000013406729&locationLevel=city&mode=location&radius=25&radiusUnit=MI",
-        "own", True),
-    "Bosch": (
-        "https://jobs.bosch.com/job-search-result/?language=en&q=security&country=India&city=Hyderabad",
-        "own", True),
-    "ABB": (
-        "https://new.abb.com/jobs/search?q=security&location=India",
-        "own", False),
-
-    # ── Other ─────────────────────────────────────────────────────────────────
-    "Uber": (
-        "https://www.uber.com/in/en/careers/list/?query=security&location=IND-Telangana-Hyderabad",
-        "own", True),
-    "FedEx": (
-        "https://www.fedex.com/en-us/about/careers.html?q=security&location=India",
-        "own", True),
-    "Blackbaud": (
-        "https://careers.blackbaud.com/us/en/search-results?keywords=security",
-        "own", False),
-    "Eli Lilly": (
-        "https://careers.lilly.com/global/en/search-results?keywords=security&location=Hyderabad%2C+Telangana%2C+India",
-        "own", True),
-    "Novartis": (
-        "https://www.novartis.com/in-en/careers/career-search?search_api_fulltext=cyber+security&country[]=LOC_IN&field_job_posted_date=All&op=Submit",
-        "own", True),
-    "WBD": (
-        "https://careers.wbd.com/global/en/hyderabad-jobs/search-results?keywords=security",
-        "own", True),
-    "Providence": (
-        "https://careers.providence.in/search/?q=&q2=&alertId=&title=security&location=&date=#searchresults",
-        "own", True),
-    "Electronic Arts": (
-        "https://jobs.ea.com/en_US/careers/Home/Hyderabad?4536=[8317]&4536_format=3019&listFilterMode=1&jobRecordsPerPage=20",
-        "own", True),
-    "Straive": (
-        "https://straive.com/careers/?search=security",
-        "own", True),
-
-    # ── Banking / Financial Services ──────────────────────────────────────────
-    "Bank of America": (
-        "https://careers.bankofamerica.com/en-us/job-search?search=security&city=Hyderabad&country=India",
-        "own", True),
-    "Barclays": (
-        "https://search.jobs.barclays/search-jobs/security/Hyderabad/461/1/2/6252001/17.3850/78.4867/50/2",
-        "own", True),
-    "BNY Mellon": (
-        "https://bnymellon.wd1.myworkdayjobs.com/BNYMellon?q=security&locationCountry=IN",
-        "workday", True),
-    "Citi": (
-        "https://jobs.citi.com/search-jobs/security/Hyderabad/287/2/6252001/17.385/78.4867/50/2",
-        "own", True),
-    "UBS": (
-        "https://jobs.ubs.com/TGnewUI/Search/home/HomeWithPreLoad?partnerid=25008&siteid=5012&q=security&locationsearch=Hyderabad",
-        "own", True),
-    "US Bank": (
-        "https://careers.usbank.com/global/en/search-results?keywords=security&location=Hyderabad%2C+Telangana%2C+India",
-        "own", True),
-    "Franklin Templeton": (
-        "https://careers.franklintempleton.com/global/en/search-results?keywords=security&location=Hyderabad",
-        "own", True),
-    "Fiserv": (
-        "https://fiserv.wd5.myworkdayjobs.com/EXT_Careers?q=security&locationCountry=IN",
-        "workday", True),
-    "Charles Schwab": (
-        "https://schwabjobs.com/search-jobs/security/Hyderabad/271/1/2/6252001/17.385/78.4867/50/2",
-        "own", True),
-    "DBS Bank": (
-        "https://www.dbs.com/careers/job-search?keyword=security&location=Hyderabad",
-        "own", True),
-    "Lloyds Banking Group": (
-        "https://lloydsbankinggroupcareers.com/search/?q=security&l=Hyderabad",
-        "own", True),
-    "MetLife": (
-        "https://careers.metlife.com/global/en/search-results?keywords=security&location=Hyderabad%2C+Telangana%2C+India",
-        "own", True),
-    "Moody's": (
-        "https://careers.moodys.com/us/en/search-results?keywords=security&location=Hyderabad",
-        "own", True),
-    "S&P Global": (
-        "https://careers.spglobal.com/jobs?keywords=security&location=Hyderabad%2C+Telangana%2C+India",
-        "own", True),
-    "Voya Financial": (
-        "https://voya.wd5.myworkdayjobs.com/Voya_Careers?q=security&locationCountry=IN",
-        "workday", True),
-    "Nationwide": (
-        "https://nationwide.jobs/hyderabad-in/jobs/?q=security",
-        "own", True),
-    "LPL Financial": (
-        "https://careers.lpl.com/search-jobs/security/Hyderabad/472/1/2/6252001/17.385/78.4867/50/2",
-        "own", True),
-
-    # ── Big Tech / Hardware ───────────────────────────────────────────────────
-    "Dell Technologies": (
-        "https://jobs.dell.com/search-jobs/security/Hyderabad/507/1/2/6252001/17.385/78.4867/50/2",
-        "own", True),
-    "Texas Instruments": (
-        "https://careers.ti.com/search-jobs/security/India/120/1/2/6252001/17.385/78.4867/50/2",
-        "own", True),
-    "Persistent Systems": (
-        "https://www.persistent.com/careers/job-search/?keyword=security&location=Hyderabad",
-        "own", True),
-    "Hexaware Technologies": (
-        "https://hexaware.com/careers/job-search/?q=security&location=Hyderabad",
-        "own", True),
-    "OpenText": (
-        "https://careers.opentext.com/global/en/search-results?keywords=security&location=Hyderabad%2C+Telangana%2C+India",
-        "own", True),
-    "Red Hat": (
-        "https://jobs.redhat.com/search-jobs/security/Hyderabad/506/1/2/6252001/17.385/78.4867/50/2",
-        "own", True),
-    "UiPath": (
-        "https://job-boards.greenhouse.io/uipath?q=security",
-        "greenhouse", True),
-    "Garmin": (
-        "https://careers.garmin.com/careers-home/jobs?q=security&l=Hyderabad%2C+India",
-        "own", True),
-    "Ericsson": (
-        "https://jobs.ericsson.com/careers?query=security&location=Hyderabad%2C+Telangana%2C+India",
-        "own", True),
-    "Verizon": (
-        "https://verizon.wd5.myworkdayjobs.com/verizon_careers?q=security&locationCountry=IN",
-        "workday", True),
-    "T-Mobile": (
-        "https://careers.t-mobile.com/search-jobs/security/Hyderabad/562/1/2/6252001/17.385/78.4867/50/2",
-        "own", True),
-    "Western Union": (
-        "https://careers.westernunion.com/global/en/search-results?keywords=security&location=Hyderabad%2C+Telangana%2C+India",
-        "own", True),
-
-    # ── Healthcare / Pharma / Insurance ───────────────────────────────────────
-    "Optum (UnitedHealth Group)": (
-        "https://careers.unitedhealthgroup.com/search-jobs/security/Hyderabad/523/1/2/6252001/17.385/78.4867/50/2",
-        "own", True),
-    "Elevance Health/Carelon": (
-        "https://elevancehealth.wd1.myworkdayjobs.com/elevancehealth?q=security&locationCountry=IN",
-        "workday", True),
-    "Thermo Fisher Scientific": (
-        "https://jobs.thermofisher.com/global/en/search-results?keywords=security&location=Hyderabad%2C+Telangana%2C+India",
-        "own", True),
-    "Johnson & Johnson": (
-        "https://careers.jnj.com/en/jobs/?search=security&location=Hyderabad%2C+Telangana%2C+India",
-        "own", True),
-    "Medtronic": (
-        "https://jobs.medtronic.com/jobs?keywords=security&location=Hyderabad%2C+Telangana%2C+India",
-        "own", True),
-    "Philips": (
-        "https://careers.philips.com/global/en/search-results?keywords=security&location=Hyderabad%2C+Telangana%2C+India",
-        "own", True),
-    "Roche": (
-        "https://careers.roche.com/global/en/search-results?keywords=security&location=Hyderabad%2C+Telangana%2C+India",
-        "own", True),
-    "Sanofi": (
-        "https://www.sanofi.com/en/careers/job-search?keyword=security&location=Hyderabad",
-        "own", True),
-
-    # ── Industrial / Aerospace ────────────────────────────────────────────────
-    "Nike": (
-        "https://careers.nike.com/jobs?query=security&location=Hyderabad%2C+India",
-        "own", True),
-    "Boeing": (
-        "https://jobs.boeing.com/search-jobs/security/Hyderabad/440/1/2/6252001/17.385/78.4867/50/2",
-        "own", True),
-    "Siemens": (
-        "https://jobs.siemens.com/careers?query=security&location=Hyderabad%2C+Telangana%2C+India",
-        "own", True),
-    "Schneider Electric": (
-        "https://www.se.com/in/en/about-us/careers/job-search.jsp?text=security&country=India&city=Hyderabad",
-        "own", True),
-}
-
-# ─────────────────────────────────────────────────────────────────────────────
-# LOGGING  — FIX 10: rotating log so it never grows forever
-# ─────────────────────────────────────────────────────────────────────────────
-_file_handler   = RotatingFileHandler(LOG_FILE, maxBytes=5 * 1024 * 1024, backupCount=3)
-_stream_handler = logging.StreamHandler()
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
-    handlers=[_file_handler, _stream_handler],
 )
 log = logging.getLogger(__name__)
 
+# ─────────────────────────────────────────────────────────────────────────────
+# KEYWORD MATCHING
+# Uses full phrases — far fewer false positives than single words
+# ─────────────────────────────────────────────────────────────────────────────
+SECURITY_PHRASES = [
+    "security engineer", "security analyst", "security architect",
+    "security researcher", "security consultant", "security specialist",
+    "security manager", "security lead", "security operations",
+    "security administrator", "security director", "security officer",
+    "security developer", "security advisor", "security head",
+    "security principal", "security associate", "security intern",
+    "cybersecurity", "cyber security", "information security",
+    "cloud security", "application security", "appsec", "cloudsec",
+    "network security", "endpoint security", "product security",
+    "iam engineer", "iam analyst", "identity engineer", "identity analyst",
+    "identity and access", "access management",
+    "soc analyst", "soc engineer", "siem engineer", "siem analyst",
+    "threat analyst", "threat hunter", "threat intelligence",
+    "vulnerability analyst", "vulnerability management", "vulnerability engineer",
+    "penetration tester", "pentester", "pen tester",
+    "devsecops", "dev sec ops", "incident response",
+    "forensics analyst", "malware analyst", "malware researcher",
+    "red team", "blue team", "purple team",
+    "grc analyst", "grc engineer", "grc consultant",
+    "compliance engineer", "risk analyst", "infosec",
+    "zero trust", "sast engineer", "dast engineer",
+    "offensive security", "defensive security",
+]
+
+REJECT_PATTERNS = [
+    r"\bphysical security\b", r"\bfood security\b", r"\bnational security\b",
+    r"\bsecurity guard\b",    r"\bguard\b",          r"\bsafety officer\b",
+    r"\bcredit risk\b",       r"\bmarket risk\b",     r"\boperational risk\b",
+    r"\bliquidity risk\b",    r"\bmodel risk\b",      r"\btax compliance\b",
+    r"\bhr compliance\b",     r"\bbrand identity\b",  r"\bvisual identity\b",
+    r"\baml\b",               r"\banti.money laundering\b",
+    r"\bcredit compliance\b", r"\bcorporate identity\b",
+]
+
+def is_security_job(title: str) -> bool:
+    if not title or len(title) < 6:
+        return False
+    t = title.lower().strip()
+    if not any(p in t for p in SECURITY_PHRASES):
+        return False
+    return not any(re.search(pat, t, re.IGNORECASE) for pat in REJECT_PATTERNS)
 
 # ─────────────────────────────────────────────────────────────────────────────
-# STATE  — FIX 4: TTL cleanup so file doesn't grow forever
+# LOCATION SCORING
 # ─────────────────────────────────────────────────────────────────────────────
-def load_state():
+OVERSEAS_SIGNALS = [
+    "united states", " usa", "united kingdom", " uk", "london", "canada",
+    "australia", "germany", "france", "singapore", "ireland", "poland",
+    "romania", "new york", "san francisco", "seattle", "amsterdam",
+    "westlake", "southlake", "eden prairie", "guangzhou", "cork",
+    ", tx", ", ca", ", wa", ", ny", ", fl", ", ga", ", mn",
+]
+
+OTHER_INDIA = [
+    "mumbai", "pune", "chennai", "delhi", "noida",
+    "gurugram", "gurgaon", "kolkata", "ahmedabad", "kochi", "coimbatore",
+]
+
+def score_location(loc: str) -> tuple[int, str]:
+    """
+    3 = Hyderabad  → top priority
+    2 = Remote     → second
+    1 = Bangalore  → third
+    0 = Other India
+   -1 = Overseas   → drop entirely
+    """
+    s = loc.lower().strip()
+    if any(o in s for o in OVERSEAS_SIGNALS):
+        return -1, ""
+    if "hyderabad" in s or "telangana" in s:
+        return 3, "📍 Hyderabad"
+    if "remote" in s:
+        return 2, "🌐 Remote"
+    if "bangalore" in s or "bengaluru" in s:
+        return 1, "🏙️ Bangalore"
+    if "india" in s or any(c in s for c in OTHER_INDIA):
+        return 0, f"🇮🇳 {loc.strip()}" if loc.strip() else "🇮🇳 India"
+    # Unknown — keep cautiously
+    return 0, f"❓ {loc.strip()}" if loc.strip() else "❓ Unknown"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# COMPANY REGISTRY — ALL 110 FROM YOUR ORIGINAL LIST
+#
+# "greenhouse" → Greenhouse public JSON API  (fast, reliable, no browser)
+# "lever"      → Lever public JSON API       (fast, reliable, no browser)
+# "html"       → requests + BeautifulSoup    (works for most own-ATS pages)
+#
+# NOTE: Workday & Eightfold pages are heavily JS-rendered.
+#       requests will attempt them but may get limited results.
+#       Greenhouse/Lever companies will always work reliably.
+# ─────────────────────────────────────────────────────────────────────────────
+COMPANIES = {
+
+    # ══ GREENHOUSE — public JSON API, most reliable ═══════════════════════════
+    "GitLab":               ("greenhouse", "gitlab"),
+    "UiPath":               ("greenhouse", "uipath"),
+    "Tide":                 ("greenhouse", "tide"),
+    "Freshworks":           ("greenhouse", "freshworks"),
+    "Palo Alto Networks":   ("greenhouse", "paloaltonetworks"),
+    "CrowdStrike":          ("greenhouse", "crowdstrike"),
+    "SentinelOne":          ("greenhouse", "sentinelone"),
+    "Cloudflare":           ("greenhouse", "cloudflare"),
+    "Elastic":              ("greenhouse", "elastic"),
+    "Databricks":           ("greenhouse", "databricks"),
+    "MongoDB":              ("greenhouse", "mongodb"),
+    "Rubrik":               ("greenhouse", "rubrik"),
+    "Druva":                ("greenhouse", "druva"),
+    "Postman":              ("greenhouse", "postman"),
+    "Browserstack":         ("greenhouse", "browserstack"),
+    "Meesho":               ("greenhouse", "meesho"),
+    "Sprinklr":             ("greenhouse", "sprinklr"),
+    "Darwinbox":            ("greenhouse", "darwinbox"),
+    "Wiz":                  ("greenhouse", "wiz-2"),
+    "Lacework":             ("greenhouse", "lacework"),
+    "Abnormal Security":    ("greenhouse", "abnormalsecurity"),
+    "Sysdig":               ("greenhouse", "sysdig"),
+    "Aqua Security":        ("greenhouse", "aquasecurity"),
+    "Drata":                ("greenhouse", "drata"),
+    "Vanta":                ("greenhouse", "vanta"),
+    "1Password":            ("greenhouse", "1password"),
+    "JumpCloud":            ("greenhouse", "jumpcloud"),
+    "PagerDuty":            ("greenhouse", "pagerduty"),
+    "New Relic":            ("greenhouse", "newrelic"),
+    "Hashicorp":            ("greenhouse", "hashicorp"),
+    "Confluent":            ("greenhouse", "confluent"),
+    "Chargebee":            ("greenhouse", "chargebee"),
+    "Blackbaud":            ("greenhouse", "blackbaud"),
+
+    # ══ LEVER — public JSON API, very reliable ════════════════════════════════
+    "Datadog":              ("lever", "datadog"),
+    "Snyk":                 ("lever", "snyk"),
+    "Razorpay":             ("lever", "razorpay"),
+    "Groww":                ("lever", "groww"),
+    "PhonePe":              ("lever", "phonepe"),
+    "Mattermost":           ("lever", "mattermost"),
+    "Whatfix":              ("lever", "whatfix"),
+
+    # ══ HTML — Big Tech ═══════════════════════════════════════════════════════
+    "Google": ("html",
+        "https://www.google.com/about/careers/applications/jobs/results"
+        "?location=Hyderabad%2C+India&has_remote=true&q=security"),
+    "Microsoft": ("html",
+        "https://apply.careers.microsoft.com/careers?query=security&start=0"
+        "&location=Hyderabad%2C++TS%2C++India&sort_by=relevance"
+        "&filter_distance=160&filter_include_remote=1"),
+    "Meta": ("html",
+        "https://www.metacareers.com/jobsearch/?teams[0]=Security"
+        "&offices[0]=Hyderabad%2C+India&roles[0]=Full+time+employment"),
+    "Apple": ("html",
+        "https://jobs.apple.com/en-in/search"
+        "?location=india-INDC+hyderabad-HY1&key=security"),
+    "Amazon": ("html",
+        "https://www.amazon.jobs/en-gb/search?base_query=security"
+        "&loc_query=Hyderabad%2C+Telangana%2C+India"
+        "&city=Hyderabad&county=Hyderabad&region=Telangana&country=IND"
+        "&latitude=17.3949&longitude=78.47081&radius=24km"),
+    "GitHub": ("html",
+        "https://www.github.careers/careers-home/jobs"
+        "?keywords=security&locations=,,India&page=1"),
+
+    # ══ HTML — Semiconductors ═════════════════════════════════════════════════
+    "Nvidia": ("html",
+        "https://jobs.nvidia.com/careers?query=security&start=0"
+        "&location=Hyderabad%2C++Telangana%2C++India"
+        "&sort_by=relevance&filter_distance=160&filter_include_remote=1"),
+    "Qualcomm": ("html",
+        "https://careers.qualcomm.com/careers?query=security&start=0"
+        "&location=Hyderabad%2C+TS%2C+India&sort_by=relevance&filter_distance=80"),
+    "AMD": ("html",
+        "https://careers.amd.com/careers-home/jobs?keywords=security"
+        "&location=Hyderabad%2C+Telangana%2C+India&woe=7&regionCode=IN"
+        "&stretchUnit=MILES&stretch=10&sortBy=relevance&page=1"),
+    "Intel": ("html",
+        "https://intel.wd1.myworkdayjobs.com/External"
+        "?q=security&locations=1e4a4eb3adf101f44070f976bf8184cf"),
+    "Micron Technology": ("html",
+        "https://micron.eightfold.ai/careers?domain=micron.com&query=security"
+        "&start=0&location=Hyderabad%2C++TS%2C++India"
+        "&sort_by=relevance&filter_distance=80&filter_include_remote=1"),
+    "Silicon Labs": ("html",
+        "https://silabs.wd1.myworkdayjobs.com/SiliconlabsCareers"
+        "?q=security&locationCountry=c4f78be1a8f14da0ab49ce1162348a5e"
+        "&locations=15081e9a5f8e01a7c343745ac500ce04"),
+
+    # ══ HTML — Enterprise SaaS ════════════════════════════════════════════════
+    "Salesforce": ("html",
+        "https://www.salesforce.com/company/careers/jobs/"
+        "?location=Hyderabad&search=security&page=1"),
+    "ServiceNow": ("html",
+        "https://careers.servicenow.com/jobs/?search=security"
+        "&country=India&region=Telangana&location=Hyderabad&origin=global"),
+    "Atlassian": ("html",
+        "https://www.atlassian.com/company/careers/all-jobs"
+        "?team=Security&location=India&search="),
+    "Adobe": ("html",
+        "https://adobe.wd5.myworkdayjobs.com/external_experienced"
+        "?q=security&locationCountry=IN"),
+    "Oracle": ("html",
+        "https://careers.oracle.com/en/sites/jobsearch/jobs?keyword=security"
+        "&location=HYDERABAD%2C+TELANGANA%2C+India"
+        "&locationId=300001842985230&locationLevel=city&mode=location"
+        "&radius=25&radiusUnit=MI"),
+    "SAP": ("html",
+        "https://jobs.sap.com/search/?createNewAlert=false"
+        "&q=security&locationsearch=Hyderabad"),
+    "VMware/Broadcom": ("html",
+        "https://careers.broadcom.com/jobs?q=security+cybersecurity"
+        "&location=Hyderabad%2C+Telangana%2C+India"),
+    "Pegasystems": ("html",
+        "https://www.pega.com/about/careers/search?q=security&location=Hyderabad"),
+    "Zoho": ("html",
+        "https://careers.zohocorp.com/jobs/Careers?search=security"),
+    "Intuit": ("html",
+        "https://jobs.intuit.com/search-jobs/security/India/27595/1/2/1269750/22/79/0/2"),
+    "Gainsight": ("html",
+        "https://gainsight.wd5.myworkdayjobs.com/Gainsight_External_Careers"
+        "?q=security&locations=e33bd8017cf71001bd06d95a7e730000"),
+
+    # ══ HTML — Cybersecurity ══════════════════════════════════════════════════
+    "Zscaler": ("html",
+        "https://www.zscaler.com/careers/search?q=security&office=india"),
+    "Sophos": ("html",
+        "https://jobs.sophos.com/search?q=security&l=Hyderabad"),
+    "Akamai": ("html",
+        "https://www.akamai.com/careers/job-search?q=security&location=India"),
+
+    # ══ HTML — Networking / Infra ═════════════════════════════════════════════
+    "Cisco": ("html",
+        "https://careers.cisco.com/global/en/search-results?keywords=security"),
+    "Splunk": ("html",
+        "https://jobs.cisco.com/jobs/SearchJobs/splunk%20security"
+        "?listFilterMode=1&21178=21178"),
+    "F5": ("html",
+        "https://www.f5.com/company/careers/open-positions?q=security&country=India"),
+
+    # ══ HTML — Cloud / Data ═══════════════════════════════════════════════════
+    "Snowflake": ("html",
+        "https://careers.snowflake.com/us/en/search-results"
+        "?keywords=security&country=India"),
+    "DigitalOcean": ("html",
+        "https://www.digitalocean.com/careers/open-roles"
+        "?query=security&location=Hyderabad"),
+    "Nutanix": ("html",
+        "https://careers.nutanix.com/en/jobs/?search=security&pagesize=20#results"),
+
+    # ══ HTML — Financial Services ═════════════════════════════════════════════
+    "Goldman Sachs": ("html",
+        "https://higher.gs.com/results?JOB_FUNCTION=Security+Engineering"
+        "&LOCATION=Hyderabad&page=1&search=security&sort=RELEVANCE"),
+    "JPMorgan": ("html",
+        "https://jpmc.fa.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/jobs"
+        "?keyword=security&location=Hyderabad%2C+Telangana%2C+India"
+        "&locationId=300000081155702&locationLevel=city&mode=location"
+        "&radius=25&radiusUnit=MI"),
+    "Morgan Stanley": ("html",
+        "https://morganstanley.eightfold.ai/careers?source=mscom&query=security"
+        "&start=0&sort_by=relevance&filter_city=Mumbai%2CBengaluru"),
+    "HSBC": ("html",
+        "https://portal.careers.hsbc.com/careers?query=Cybersecurity"
+        "&location=India&domain=hsbc.com&sort_by=relevance"),
+    "Wells Fargo": ("html",
+        "https://www.wellsfargojobs.com/en/jobs/"
+        "?search=security&location=HYDERABAD&pagesize=20#results"),
+    "Vanguard": ("html",
+        "https://www.vanguardjobs.com/job-search-results/"
+        "?location=IN%2C+Telangana%2C+Hyderabad&keyword=cybersecurity"
+        "&category[]=Technology"),
+    "Invesco": ("html",
+        "https://invesco.wd1.myworkdayjobs.com/en-GB/IVZ"
+        "?q=security&locations=1804888b7f5a100128e426fb60bc0000"),
+    "FactSet": ("html",
+        "https://www.factset.com/careers/job-search?q=security&l=Hyderabad"),
+    "State Street": ("html",
+        "https://careers.statestreet.com/global/en/search-results?m=3"
+        "&keywords=security&cityStateCountry=Hyderabad%2C+Telangana%2C+India"),
+    "Synchrony": ("html",
+        "https://www.synchrony.com/careers/job-search.html"
+        "?q=security&location=Hyderabad"),
+    "Broadridge": ("html",
+        "https://www.broadridge.com/careers/search-jobs?q=security&l=India"),
+    "Stripe": ("html",
+        "https://stripe.com/jobs/search?query=security"),
+    "LSEG": ("html",
+        "https://lseg.wd3.myworkdayjobs.com/Careers?q=security"
+        "&locationCountry=c4f78be1a8f14da0ab49ce1162348a5e"
+        "&primaryLocation=85fcb4c116cc1001ed602e25ce830000"),
+
+    # ══ HTML — IT Services ════════════════════════════════════════════════════
+    "IBM": ("html",
+        "https://www.ibm.com/in-en/careers/search"
+        "?field_keyword_08[0]=Security&field_keyword_05[0]=India"),
+    "Wipro": ("html",
+        "https://careers.wipro.com/careers-home/jobs?q=security"
+        "&location=Hyderabad%2C+Telangana%2C+India"),
+    "Infosys": ("html",
+        "https://career.infosys.com/joblist"
+        "?industryType=j&location=Hyderabad&skills=security"),
+    "TCS": ("html",
+        "https://www.tcs.com/careers/india/job-search"
+        "?keyword=security&location=Hyderabad"),
+    "HCLTech": ("html",
+        "https://www.hcltech.com/careers/job-search"
+        "?keyword=security&location=Hyderabad"),
+    "Accenture": ("html",
+        "https://www.accenture.com/in-en/careers/jobsearch"
+        "?jq=security&jl=Hyderabad"),
+    "Capgemini": ("html",
+        "https://www.capgemini.com/in-en/careers/job-search/"
+        "?search_term=security&country=India&city=Hyderabad"),
+    "Deloitte": ("html",
+        "https://apply.deloitte.com/careers/SearchJobs/security"
+        "?3836=[India]&listFilterMode=1"),
+    "NTT": ("html",
+        "https://services.global.ntt/en-us/careers?q=security&location=Hyderabad"),
+    "EPAM": ("html",
+        "https://www.epam.com/careers/job-listings?search=security&city=Hyderabad"),
+    "Accolite": ("html",
+        "https://accolite.com/careers/?search=security"),
+
+    # ══ HTML — Telecom ════════════════════════════════════════════════════════
+    "AT&T": ("html",
+        "https://www.att.jobs/search-jobs/security/Hyderabad%2C+Telangana/117/1/4"
+        "/1269750-1254788-1269844-1269843/17x38405/78x45636/50/2"),
+    "Ericsson": ("html",
+        "https://jobs.ericsson.com/careers?query=security"
+        "&location=Hyderabad%2C+Telangana%2C+India"),
+    "Verizon": ("html",
+        "https://verizon.wd5.myworkdayjobs.com/verizon_careers"
+        "?q=security&locationCountry=IN"),
+    "T-Mobile": ("html",
+        "https://careers.t-mobile.com/search-jobs/security/Hyderabad/562/1/2"
+        "/6252001/17.385/78.4867/50/2"),
+
+    # ══ HTML — Fintech ════════════════════════════════════════════════════════
+    "GoDaddy": ("html",
+        "https://careers.godaddy.com/jobs/search"
+        "?page=1&query=security&country_codes[]=IN"),
+
+    # ══ HTML — Retail / Consumer ══════════════════════════════════════════════
+    "Walmart": ("html",
+        "https://careers.walmart.com/results"
+        "?q=security&l=Hyderabad%2C+Telangana%2C+India"),
+    "Costco": ("html",
+        "https://careers.costco.com/jobs?keywords=security&stretchUnit=MILES"
+        "&stretch=10&location=Hyderabad%2C+Telangana%2C+India&woe=7&regionCode=IN"),
+    "Flipkart": ("html",
+        "https://www.flipkartcareers.com/#!/joblist?search=security"),
+    "PepsiCo": ("html",
+        "https://www.pepsicojobs.com/main/jobs?keywords=security"
+        "&stretchUnit=MILES&stretch=10&location=Hyderabad%2C+Telangana%2C+India"
+        "&woe=7&regionCode=IN"),
+    "McDonald's": ("html",
+        "https://careers.mcdonalds.com/jobs?filter[country][0]=IN"
+        "&keyword=security&location_name=hyderabad&location_type=1"),
+
+    # ══ HTML — Industrial / Hardware ══════════════════════════════════════════
+    "Honeywell": ("html",
+        "https://careers.honeywell.com/en/sites/Honeywell/jobs?keyword=security"
+        "&location=Hyderabad%2C+Telangana%2C+India"
+        "&locationId=100000013406729&locationLevel=city&mode=location"
+        "&radius=25&radiusUnit=MI"),
+    "Bosch": ("html",
+        "https://jobs.bosch.com/job-search-result/?language=en"
+        "&q=security&country=India&city=Hyderabad"),
+    "ABB": ("html",
+        "https://new.abb.com/jobs/search?q=security&location=India"),
+    "Siemens": ("html",
+        "https://jobs.siemens.com/careers?query=security"
+        "&location=Hyderabad%2C+Telangana%2C+India"),
+    "Schneider Electric": ("html",
+        "https://www.se.com/in/en/about-us/careers/job-search.jsp"
+        "?text=security&country=India&city=Hyderabad"),
+
+    # ══ HTML — Other Tech / Media ═════════════════════════════════════════════
+    "Uber": ("html",
+        "https://www.uber.com/in/en/careers/list/"
+        "?query=security&location=IND-Telangana-Hyderabad"),
+    "FedEx": ("html",
+        "https://www.fedex.com/en-us/about/careers.html?q=security&location=India"),
+    "Eli Lilly": ("html",
+        "https://careers.lilly.com/global/en/search-results"
+        "?keywords=security&location=Hyderabad%2C+Telangana%2C+India"),
+    "Novartis": ("html",
+        "https://www.novartis.com/in-en/careers/career-search"
+        "?search_api_fulltext=cyber+security&country[]=LOC_IN"
+        "&field_job_posted_date=All&op=Submit"),
+    "WBD": ("html",
+        "https://careers.wbd.com/global/en/hyderabad-jobs/search-results"
+        "?keywords=security"),
+    "Providence": ("html",
+        "https://careers.providence.in/search/"
+        "?q=&q2=&alertId=&title=security&location=&date=#searchresults"),
+    "Electronic Arts": ("html",
+        "https://jobs.ea.com/en_US/careers/Home/Hyderabad"
+        "?4536=[8317]&4536_format=3019&listFilterMode=1&jobRecordsPerPage=20"),
+    "Straive": ("html",
+        "https://straive.com/careers/?search=security"),
+    "Western Union": ("html",
+        "https://careers.westernunion.com/global/en/search-results"
+        "?keywords=security&location=Hyderabad%2C+Telangana%2C+India"),
+
+    # ══ HTML — Banking ════════════════════════════════════════════════════════
+    "Bank of America": ("html",
+        "https://careers.bankofamerica.com/en-us/job-search"
+        "?search=security&city=Hyderabad&country=India"),
+    "Barclays": ("html",
+        "https://search.jobs.barclays/search-jobs/security/Hyderabad/461/1/2"
+        "/6252001/17.3850/78.4867/50/2"),
+    "BNY Mellon": ("html",
+        "https://bnymellon.wd1.myworkdayjobs.com/BNYMellon"
+        "?q=security&locationCountry=IN"),
+    "Citi": ("html",
+        "https://jobs.citi.com/search-jobs/security/Hyderabad/287/2"
+        "/6252001/17.385/78.4867/50/2"),
+    "UBS": ("html",
+        "https://jobs.ubs.com/TGnewUI/Search/home/HomeWithPreLoad"
+        "?partnerid=25008&siteid=5012&q=security&locationsearch=Hyderabad"),
+    "US Bank": ("html",
+        "https://careers.usbank.com/global/en/search-results"
+        "?keywords=security&location=Hyderabad%2C+Telangana%2C+India"),
+    "Franklin Templeton": ("html",
+        "https://careers.franklintempleton.com/global/en/search-results"
+        "?keywords=security&location=Hyderabad"),
+    "Fiserv": ("html",
+        "https://fiserv.wd5.myworkdayjobs.com/EXT_Careers"
+        "?q=security&locationCountry=IN"),
+    "Charles Schwab": ("html",
+        "https://schwabjobs.com/search-jobs/security/Hyderabad/271/1/2"
+        "/6252001/17.385/78.4867/50/2"),
+    "DBS Bank": ("html",
+        "https://www.dbs.com/careers/job-search?keyword=security&location=Hyderabad"),
+    "Lloyds Banking Group": ("html",
+        "https://lloydsbankinggroupcareers.com/search/?q=security&l=Hyderabad"),
+    "MetLife": ("html",
+        "https://careers.metlife.com/global/en/search-results"
+        "?keywords=security&location=Hyderabad%2C+Telangana%2C+India"),
+    "Moody's": ("html",
+        "https://careers.moodys.com/us/en/search-results"
+        "?keywords=security&location=Hyderabad"),
+    "S&P Global": ("html",
+        "https://careers.spglobal.com/jobs"
+        "?keywords=security&location=Hyderabad%2C+Telangana%2C+India"),
+    "Voya Financial": ("html",
+        "https://voya.wd5.myworkdayjobs.com/Voya_Careers"
+        "?q=security&locationCountry=IN"),
+    "Nationwide": ("html",
+        "https://nationwide.jobs/hyderabad-in/jobs/?q=security"),
+    "LPL Financial": ("html",
+        "https://careers.lpl.com/search-jobs/security/Hyderabad/472/1/2"
+        "/6252001/17.385/78.4867/50/2"),
+
+    # ══ HTML — More Tech ══════════════════════════════════════════════════════
+    "Dell Technologies": ("html",
+        "https://jobs.dell.com/search-jobs/security/Hyderabad/507/1/2"
+        "/6252001/17.385/78.4867/50/2"),
+    "Texas Instruments": ("html",
+        "https://careers.ti.com/search-jobs/security/India/120/1/2"
+        "/6252001/17.385/78.4867/50/2"),
+    "Persistent Systems": ("html",
+        "https://www.persistent.com/careers/job-search/"
+        "?keyword=security&location=Hyderabad"),
+    "Hexaware Technologies": ("html",
+        "https://hexaware.com/careers/job-search/?q=security&location=Hyderabad"),
+    "OpenText": ("html",
+        "https://careers.opentext.com/global/en/search-results"
+        "?keywords=security&location=Hyderabad%2C+Telangana%2C+India"),
+    "Red Hat": ("html",
+        "https://jobs.redhat.com/search-jobs/security/Hyderabad/506/1/2"
+        "/6252001/17.385/78.4867/50/2"),
+    "Garmin": ("html",
+        "https://careers.garmin.com/careers-home/jobs"
+        "?q=security&l=Hyderabad%2C+India"),
+
+    # ══ HTML — Healthcare / Pharma ════════════════════════════════════════════
+    "Optum (UnitedHealth)": ("html",
+        "https://careers.unitedhealthgroup.com/search-jobs/security/Hyderabad/523/1/2"
+        "/6252001/17.385/78.4867/50/2"),
+    "Elevance Health": ("html",
+        "https://elevancehealth.wd1.myworkdayjobs.com/elevancehealth"
+        "?q=security&locationCountry=IN"),
+    "Thermo Fisher": ("html",
+        "https://jobs.thermofisher.com/global/en/search-results"
+        "?keywords=security&location=Hyderabad%2C+Telangana%2C+India"),
+    "Johnson & Johnson": ("html",
+        "https://careers.jnj.com/en/jobs/"
+        "?search=security&location=Hyderabad%2C+Telangana%2C+India"),
+    "Medtronic": ("html",
+        "https://jobs.medtronic.com/jobs"
+        "?keywords=security&location=Hyderabad%2C+Telangana%2C+India"),
+    "Philips": ("html",
+        "https://careers.philips.com/global/en/search-results"
+        "?keywords=security&location=Hyderabad%2C+Telangana%2C+India"),
+    "Roche": ("html",
+        "https://careers.roche.com/global/en/search-results"
+        "?keywords=security&location=Hyderabad%2C+Telangana%2C+India"),
+    "Sanofi": ("html",
+        "https://www.sanofi.com/en/careers/job-search"
+        "?keyword=security&location=Hyderabad"),
+
+    # ══ HTML — Aerospace / Industrial ═════════════════════════════════════════
+    "Nike": ("html",
+        "https://careers.nike.com/jobs?query=security&location=Hyderabad%2C+India"),
+    "Boeing": ("html",
+        "https://jobs.boeing.com/search-jobs/security/Hyderabad/440/1/2"
+        "/6252001/17.385/78.4867/50/2"),
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# STATE — deduplication (persisted in seen_jobs.json in your repo)
+# ─────────────────────────────────────────────────────────────────────────────
+def load_state() -> dict:
     if not Path(STATE_FILE).exists():
         return {}
     try:
         with open(STATE_FILE, "r", encoding="utf-8") as f:
-            raw = json.load(f)
-    except Exception as e:
-        log.warning(f"Could not load state file: {e}")
+            data = json.load(f)
+        cutoff = datetime.now() - timedelta(days=STATE_EXPIRY_DAYS)
+        return {
+            k: v for k, v in data.items()
+            if datetime.fromisoformat(
+                v.get("seen_at", "2000-01-01")
+            ) > cutoff
+        }
+    except Exception:
         return {}
 
-    cutoff = datetime.now() - timedelta(days=STATE_EXPIRY_DAYS)
-    cleaned = {}
-    for k, v in raw.items():
-        try:
-            if datetime.fromisoformat(v["seen_at"]) > cutoff:
-                cleaned[k] = v
-        except Exception:
-            cleaned[k] = v   # keep entries with bad timestamps rather than lose them
-
-    removed = len(raw) - len(cleaned)
-    if removed:
-        log.info(f"Pruned {removed} expired entries from state (>{STATE_EXPIRY_DAYS} days old)")
-    return cleaned
-
-
-def save_state(state):
+def save_state(state: dict) -> None:
     with open(STATE_FILE, "w", encoding="utf-8") as f:
         json.dump(state, f, indent=2)
 
-
-def job_id(company, title, url):
+def make_id(company: str, title: str, url: str) -> str:
     return hashlib.md5(f"{company}|{title}|{url}".encode()).hexdigest()
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# FILTER HELPERS
-# ─────────────────────────────────────────────────────────────────────────────
-def clean_title(text: str) -> str:
-    """Strip location/metadata that gets concatenated onto titles."""
-    for sep in [
-        "India, Telangana", "Hyderabad,", "Telangana,", "Posted",
-        "Full-time", "Full time", "Remote \u2014", "\u00a0\u2014",
-        "Requisition ID", "Application deadline", "Save for Later",
-        " · India", " \u00b7 India", "Bangalore,", "Pune,", "Mumbai,",
-        "Chennai,", "Professional", " [L", "\u00b7India\u00b7",
-    ]:
-        # FIX 13: use split() instead of index() — safer
-        text = text.split(sep)[0]
-    return text.strip(" ·,\t\n\r")
-
-
-def is_real_job_title(text: str) -> bool:
-    t = text.lower()
-    words = t.split()
-    if not (2 <= len(words) <= 10):
-        return False
-    if not any(kw in t for kw in CYBER_KEYWORDS):
-        return False
-    if not any(rw in t for rw in ROLE_WORDS):
-        return False
-    ui_signals = [
-        "keyword:", "search:", "filter", "clear all", "showing",
-        "results for", "click here", "apply now", "see open", "explore",
-        "shaping", "define what", "from college", "from intern",
-        "empowering", "leading with", "cloudflare", "ray id",
-        "privacy", "cookie", "sign in", "careers at", "open positions",
-        "jobs found", "search results", "https://", "positions related",
-    ]
-    return not any(s in t for s in ui_signals)
-
-
-def keyword_match(text: str) -> bool:
-    return any(k in text.lower() for k in SEARCH_KEYWORDS)
-
-
-def is_hyderabad_relevant(job: dict, hyd_office: bool) -> bool:
-    loc   = job.get("location", "").lower()
-    title = job.get("title", "").lower()
-
-    if any(k in loc for k in ["hyderabad", "telangana", "india"]):
-        return True
-    if "remote" in loc or "remote" in title:
-        return True
-    if (not loc or loc in {"global", "hyderabad, india"}) and hyd_office:
-        return True
-    if any(r in loc for r in REJECT_LOCATIONS):
-        return False
-    return hyd_office
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# RETRY HELPER  — FIX 8
-# ─────────────────────────────────────────────────────────────────────────────
-def with_retry(fn, retries=3, base_delay=2):
-    """Call fn() up to `retries` times with exponential back-off."""
-    for attempt in range(retries):
-        try:
-            return fn()
-        except Exception as e:
-            if attempt == retries - 1:
-                raise
-            wait = base_delay ** attempt
-            log.warning(f"Attempt {attempt + 1} failed ({e}). Retrying in {wait}s…")
-            time.sleep(wait)
-
 
 # ─────────────────────────────────────────────────────────────────────────────
 # SCRAPERS
 # ─────────────────────────────────────────────────────────────────────────────
-def scrape_greenhouse(company, url):
-    """
-    FIX 2: now filters by keyword before accepting a job.
-    Uses the public Greenhouse JSON API — no browser needed.
-    """
-    import requests
+HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/120.0.0.0 Safari/537.36"
+    ),
+    "Accept-Language": "en-US,en;q=0.9",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+}
 
-    match = re.search(r"greenhouse\.io/([^?/&#]+)", url)
-    if not match:
-        return []
-
-    token = match.group(1).rstrip("/")
-    api   = f"https://boards-api.greenhouse.io/v1/boards/{token}/jobs?content=true"
-
-    def _fetch():
-        r = requests.get(api, timeout=15, headers={"User-Agent": "Mozilla/5.0"})
-        r.raise_for_status()
-        jobs = []
-        for job in r.json().get("jobs", []):
-            title = clean_title(job.get("title", ""))
-            # FIX 2: keyword filter added
-            if not keyword_match(title):
-                continue
-            if not is_real_job_title(title):
-                continue
-            jobs.append({
-                "title":    title,
-                "location": job.get("location", {}).get("name", ""),
-                "url":      job.get("absolute_url", url),
-                "posted":   job.get("updated_at", "")[:10],
-            })
-        return jobs
-
+def fetch_greenhouse(company: str, token: str) -> list[dict]:
+    url = f"https://boards-api.greenhouse.io/v1/boards/{token}/jobs?content=true"
     try:
-        return with_retry(_fetch)
-    except Exception as e:
-        log.warning(f"Greenhouse error for {company}: {e}")
-        return []
-
-
-def scrape_lever(company, url):
-    """
-    FIX 2: now filters by keyword before accepting a job.
-    Uses the public Lever JSON API — no browser needed.
-    """
-    import requests
-
-    match = re.search(r"lever\.co/([^/?]+)", url)
-    if not match:
-        return []
-
-    token = match.group(1)
-    api   = f"https://api.lever.co/v0/postings/{token}?mode=json"
-
-    def _fetch():
-        r = requests.get(api, timeout=15, headers={"User-Agent": "Mozilla/5.0"})
+        r = requests.get(url, headers=HEADERS, timeout=REQUEST_TIMEOUT)
         r.raise_for_status()
-        jobs = []
-        for job in r.json():
-            title = clean_title(job.get("text", ""))
-            # FIX 2: keyword filter added
-            if not keyword_match(title):
+        out = []
+        for item in r.json().get("jobs", []):
+            title = item.get("title", "").strip()
+            if not is_security_job(title):
                 continue
-            if not is_real_job_title(title):
+            loc          = item.get("location", {}).get("name", "") or ""
+            score, badge = score_location(loc)
+            if score < 0:
                 continue
-            jobs.append({
-                "title":    title,
-                "location": job.get("categories", {}).get("location", ""),
-                "url":      job.get("hostedUrl", url),
-                "posted":   datetime.fromtimestamp(job.get("createdAt", 0) / 1000).strftime("%Y-%m-%d")
-                            if job.get("createdAt") else "",
+            out.append({
+                "company": company,
+                "title":   title,
+                "badge":   badge,
+                "score":   score,
+                "url":     item.get("absolute_url", ""),
+                "posted":  item.get("updated_at", "")[:10],
             })
-        return jobs
-
-    try:
-        return with_retry(_fetch)
+        return out
     except Exception as e:
-        log.warning(f"Lever error for {company}: {e}")
+        log.warning(f"  Greenhouse [{company}]: {e}")
         return []
 
+def fetch_lever(company: str, token: str) -> list[dict]:
+    url = f"https://api.lever.co/v0/postings/{token}?mode=json"
+    try:
+        r = requests.get(url, headers=HEADERS, timeout=REQUEST_TIMEOUT)
+        r.raise_for_status()
+        out = []
+        for item in r.json():
+            title = item.get("text", "").strip()
+            if not is_security_job(title):
+                continue
+            loc          = item.get("categories", {}).get("location", "") or ""
+            score, badge = score_location(loc)
+            if score < 0:
+                continue
+            ts     = item.get("createdAt", 0)
+            posted = datetime.fromtimestamp(ts / 1000).strftime("%Y-%m-%d") if ts else ""
+            out.append({
+                "company": company,
+                "title":   title,
+                "badge":   badge,
+                "score":   score,
+                "url":     item.get("hostedUrl", ""),
+                "posted":  posted,
+            })
+        return out
+    except Exception as e:
+        log.warning(f"  Lever [{company}]: {e}")
+        return []
 
-def _fetch_page(url: str, timeout: int, wait_ms: int) -> str:
-    """Shared Playwright page fetch — raises on failure."""
-    from playwright.sync_api import sync_playwright
+def _clean(raw: str) -> str:
+    """Strip trailing metadata noise from scraped anchor text."""
+    for sep in [
+        " · ", " - India", " – India", "Hyderabad,", "Bangalore,",
+        "Telangana,", " Posted", "Full-time", "Save for Later",
+        "Requisition", " [L", "\u00b7", "\u2014",
+    ]:
+        raw = raw.split(sep)[0]
+    return raw.strip(" ,.-\t\n\r")
 
-    for wait_strategy in ("networkidle", "domcontentloaded"):
-        try:
-            with sync_playwright() as p:
-                browser = p.chromium.launch(headless=True, args=["--disable-http2"])
-                page    = browser.new_page(user_agent=(
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                    "AppleWebKit/537.36 (KHTML, like Gecko) "
-                    "Chrome/120.0.0.0 Safari/537.36"
-                ))
-                page.goto(url, timeout=timeout, wait_until=wait_strategy)
-                page.wait_for_timeout(wait_ms)   # FIX 9: was 2500, now 6000
-                content = page.content()
-                browser.close()
-            return content
-        except Exception:
-            continue
-    raise RuntimeError(f"Could not load page: {url}")
-
-
-def _extract_location_from_text(text: str) -> str:
-    """
-    FIX 3: Try to pull a real location string from job page text.
-    Returns empty string if nothing found.
-    """
-    patterns = [
+def _extract_loc(text: str) -> str:
+    """Pull a location string from a block of text."""
+    for pat in [
         r"Hyderabad[,\s]+(?:Telangana[,\s]+)?India",
         r"(?:Bengaluru|Bangalore)[,\s]+(?:Karnataka[,\s]+)?India",
         r"(?:Mumbai|Pune|Chennai|Delhi|Noida|Gurugram)[,\s]+India",
-        r"India",
-        r"Remote",
-    ]
-    for pat in patterns:
+        r"\bRemote\b",
+        r"\bIndia\b",
+    ]:
         m = re.search(pat, text, re.IGNORECASE)
         if m:
             return m.group(0).strip()
     return ""
 
-
-def scrape_html(company, url, hyd_office):
-    """Playwright browser scrape — handles JS-rendered pages."""
-    def _fetch():
-        return _fetch_page(url, timeout=30000, wait_ms=PLAYWRIGHT_WAIT)
-
+def fetch_html(company: str, url: str) -> list[dict]:
+    """
+    requests + BeautifulSoup.
+    Works for static/SSR pages.
+    Workday/Eightfold are JS-heavy — may return empty (that's normal).
+    """
     try:
-        content = with_retry(_fetch)   # FIX 8: retry on failure
+        r = requests.get(url, headers=HEADERS, timeout=REQUEST_TIMEOUT)
+        r.raise_for_status()
     except Exception as e:
-        log.warning(f"HTML scrape error for {company}: {e}")
+        log.warning(f"  HTML fetch [{company}]: {e}")
         return []
 
     try:
-        from bs4 import BeautifulSoup
-
-        soup = BeautifulSoup(content, "html.parser")
-        for tag in soup(["script", "style", "nav", "footer", "header", "noscript", "form"]):
+        soup = BeautifulSoup(r.text, "html.parser")
+        for tag in soup(["script", "style", "nav", "footer", "header", "noscript"]):
             tag.decompose()
 
         page_text = soup.get_text(" ", strip=True)
-        found: dict[str, str] = {}   # title → location
+        found     = {}   # title → (job_url, loc_string)
 
-        # Pass 1 — anchor tags (most reliable for job titles)
-        for a_tag in soup.find_all("a"):
-            raw   = a_tag.get_text(strip=True)
-            title = clean_title(raw)
-            if is_real_job_title(title) and title not in found:
-                # FIX 3: try to read location from surrounding context
-                parent_text = a_tag.find_parent().get_text(" ", strip=True) if a_tag.find_parent() else ""
-                loc = _extract_location_from_text(parent_text) or _extract_location_from_text(page_text)
-                found[title] = loc or ("Hyderabad, India" if hyd_office else "Global")
+        # Pass 1 — anchor tags with hrefs (job links are almost always <a>)
+        for a in soup.find_all("a", href=True):
+            title = _clean(a.get_text(strip=True))
+            if not is_security_job(title) or title in found:
+                continue
+            href = a["href"]
+            if href.startswith("http"):
+                job_url = href
+            elif href.startswith("/"):
+                parsed  = urlparse(url)
+                job_url = f"{parsed.scheme}://{parsed.netloc}{href}"
+            else:
+                job_url = url
+            parent     = a.find_parent()
+            ctx        = parent.get_text(" ", strip=True) if parent else ""
+            loc        = _extract_loc(ctx) or _extract_loc(page_text)
+            found[title] = (job_url, loc)
 
-        # Pass 2 — headings/list items if Pass 1 found nothing
+        # Pass 2 — headings + list items if Pass 1 got nothing
         if not found:
-            for tag in soup.find_all(["h1", "h2", "h3", "h4", "li", "span", "div"]):
-                raw   = tag.get_text(strip=True)
-                title = clean_title(raw)
-                if is_real_job_title(title) and title not in found:
-                    loc = _extract_location_from_text(tag.get_text(" ")) or _extract_location_from_text(page_text)
-                    found[title] = loc or ("Hyderabad, India" if hyd_office else "Global")
+            for tag in soup.find_all(["h1", "h2", "h3", "h4", "li"]):
+                title = _clean(tag.get_text(strip=True))
+                if not is_security_job(title) or title in found:
+                    continue
+                loc = _extract_loc(tag.get_text(" ")) or _extract_loc(page_text)
+                found[title] = (url, loc)
 
         today = datetime.today().strftime("%Y-%m-%d")
-        return [
-            {"title": title, "location": loc, "url": url, "posted": today}
-            for title, loc in list(found.items())[:50]  # raised cap from 25 → 50
-        ]
-
-    except Exception as e:
-        log.warning(f"HTML parse error for {company}: {e}")
-        return []
-
-
-def scrape_company(company, url, ats_type, hyd_office):
-    log.info(f"Checking {company} ({'HYD' if hyd_office else 'GLOBAL'}) [{ats_type}]…")
-    if ats_type == "greenhouse":
-        return scrape_greenhouse(company, url)
-    if ats_type == "lever":
-        return scrape_lever(company, url)
-    return scrape_html(company, url, hyd_office)
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# EMAIL
-# ─────────────────────────────────────────────────────────────────────────────
-def send_email(new_jobs):
-    if not new_jobs:
-        return
-
-    if not EMAIL_CONFIG["sender"] or not EMAIL_CONFIG["password"]:
-        log.error("Missing Gmail credentials. Set GMAIL_USER and GMAIL_APP_PASSWORD.")
-        return
-
-    total   = sum(len(v) for v in new_jobs.values())
-    subject = f"🔐 {total} new Security/Cyber job(s) — {datetime.today().strftime('%b %d, %Y')}"
-
-    html_rows = ""
-    for company, jobs in new_jobs.items():
-        for job in jobs:
-            html_rows += f"""
-            <tr>
-              <td style="padding:10px;border-bottom:1px solid #eee;font-weight:600">{company}</td>
-              <td style="padding:10px;border-bottom:1px solid #eee"><a href="{job['url']}" style="color:#0066cc">{job['title']}</a></td>
-              <td style="padding:10px;border-bottom:1px solid #eee;color:#555">{job['location']}</td>
-              <td style="padding:10px;border-bottom:1px solid #eee;color:#888;font-size:12px">{job['posted']}</td>
-            </tr>"""
-
-    html = f"""
-    <html><body style="font-family:Arial,sans-serif;max-width:800px;margin:auto">
-      <h2 style="color:#1a1a2e">🔐 New Security/Cyber Roles Alert</h2>
-      <p style="color:#555">Found <strong>{total} new role(s)</strong> matching: security, cybersecurity, threat.</p>
-      <table style="width:100%;border-collapse:collapse">
-        <thead><tr style="background:#f0f0f0">
-          <th style="padding:10px;text-align:left">Company</th>
-          <th style="padding:10px;text-align:left">Role</th>
-          <th style="padding:10px;text-align:left">Location</th>
-          <th style="padding:10px;text-align:left">Posted</th>
-        </tr></thead>
-        <tbody>{html_rows}</tbody>
-      </table>
-      <p style="color:#aaa;font-size:12px;margin-top:20px">Security Job Alert Scraper · {datetime.now().strftime('%Y-%m-%d %H:%M')}</p>
-    </body></html>"""
-
-    msg            = MIMEMultipart("alternative")
-    msg["Subject"] = subject
-    msg["From"]    = EMAIL_CONFIG["sender"]
-    msg["To"]      = EMAIL_CONFIG["receiver"]
-    msg.attach(MIMEText(html, "html"))
-
-    try:
-        with smtplib.SMTP(EMAIL_CONFIG["smtp_host"], EMAIL_CONFIG["smtp_port"]) as s:
-            s.starttls()
-            s.login(EMAIL_CONFIG["sender"], EMAIL_CONFIG["password"])
-            s.sendmail(EMAIL_CONFIG["sender"], EMAIL_CONFIG["receiver"], msg.as_string())
-        log.info(f"✉  Email sent: {total} new jobs")
-    except Exception as e:
-        log.error(f"Email failed: {e}")
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# MAIN
-# ─────────────────────────────────────────────────────────────────────────────
-def run():
-    log.info("=" * 60)
-    log.info("Security job scan started — Hyderabad edition")
-    if DRY_RUN:
-        log.info("DRY RUN mode — email will NOT be sent")
-
-    state    = load_state()
-    new_jobs: dict[str, list] = {}
-    errors   = 0
-
-    # FIX 5: parallel scraping — 5 workers keeps memory safe on GH Actions
-    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-        future_map = {
-            executor.submit(scrape_company, co, url, ats, hyd): co
-            for co, (url, ats, hyd) in COMPANIES.items()
-        }
-
-        for future in as_completed(future_map):
-            company = future_map[future]
-            _, (url, _, hyd_office) = company, COMPANIES[company]
-            try:
-                jobs = future.result()
-                for job in jobs:
-                    job["title"] = clean_title(job["title"])
-                    if not is_real_job_title(job["title"]):
-                        continue
-                    if not is_hyderabad_relevant(job, hyd_office):
-                        continue
-                    jid = job_id(company, job["title"], job["url"])
-                    if jid not in state:
-                        state[jid] = {
-                            "company":  company,
-                            "title":    job["title"],
-                            "seen_at":  datetime.now().isoformat(),
-                        }
-                        new_jobs.setdefault(company, []).append(job)
-            except Exception as e:
-                log.error(f"Error processing {company}: {e}")
-                errors += 1
-
-    save_state(state)
-
-    total = sum(len(v) for v in new_jobs.values())
-    if new_jobs:
-        log.info(f"Found {total} new jobs across {len(new_jobs)} companies")
-        if DRY_RUN:
-            log.info("DRY RUN — skipping email. Jobs found:")
-            for co, jobs in new_jobs.items():
-                for j in jobs:
-                    log.info(f"  [{co}] {j['title']} | {j['location']}")
-        else:
-            send_email(new_jobs)
-    else:
-        log.info("No new jobs found this run.")
-
-    log.info(f"Scan complete. Companies checked: {len(COMPANIES)} | New jobs: {total} | Errors: {errors}")
-
-
-if __name__ == "__main__":
-    run()
+        out   = []
+        for title, (job_url, loc) in list(found.items())[:50]:
+            score, badge = score_location(loc)
+            if score < 0:
+                continue
+            out.append({
+                "company": company
