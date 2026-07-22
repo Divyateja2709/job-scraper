@@ -2,13 +2,25 @@
 # filename: job_scraper.py
 
 """
-Security Job Alert Scraper — Full 110-Company Edition
-======================================================
+Security Job Alert Scraper — Full 110-Company Edition (Precision-Hardened)
+==========================================================================
 Runs on GitHub Actions every 6 hours. Completely FREE.
 Emails you only NEW security roles with direct clickable links.
 
 Priority in email: Hyderabad > Remote > Bangalore > Other India
 Overseas roles (US/UK/EU etc.) are silently dropped.
+
+Changes from original:
+  - Job container targeting (no more nav/footer/blog false positives)
+  - URL pattern validation (only real job-posting links accepted)
+  - Confidence scoring per result (threshold = 50)
+  - Stronger is_security_job() with word count + noise title guards
+  - Aggressive _clean() strips IDs, ALL CAPS, trailing junk
+  - Normalized title deduplication (near-duplicates collapse)
+  - Red-flag container rejection (cookie/policy/blog context)
+  - Retry logic (3 attempts with backoff) for transient failures
+  - Per-company zero-result tracking logged after every run
+  - Run summary logged: companies scraped / jobs found / new / emailed
 
 Install:  pip install requests beautifulsoup4
 Secrets:  GMAIL_USER | GMAIL_APP_PASSWORD | GMAIL_RECEIVER
@@ -36,10 +48,13 @@ EMAIL_CFG = {
     "port":     587,
 }
 
-STATE_FILE        = "seen_jobs.json"
-STATE_EXPIRY_DAYS = 60
-MAX_WORKERS       = 8
-REQUEST_TIMEOUT   = 20
+STATE_FILE          = "seen_jobs.json"
+STATE_EXPIRY_DAYS   = 60
+MAX_WORKERS         = 8
+REQUEST_TIMEOUT     = 20
+CONFIDENCE_THRESHOLD = 50
+MAX_RETRIES         = 3
+RETRY_BACKOFF       = 2   # seconds between retries
 
 logging.basicConfig(
     level=logging.INFO,
@@ -49,7 +64,6 @@ log = logging.getLogger(__name__)
 
 # ─────────────────────────────────────────────────────────────────────────────
 # KEYWORD MATCHING
-# Uses full phrases — far fewer false positives than single words
 # ─────────────────────────────────────────────────────────────────────────────
 SECURITY_PHRASES = [
     "security engineer", "security analyst", "security architect",
@@ -77,28 +91,80 @@ SECURITY_PHRASES = [
 ]
 
 REJECT_PATTERNS = [
-    r"\bphysical security\b", r"\bfood security\b", r"\bnational security\b",
-    r"\bsecurity guard\b",    r"\bguard\b",          r"\bsafety officer\b",
-    r"\bcredit risk\b",       r"\bmarket risk\b",     r"\boperational risk\b",
-    r"\bliquidity risk\b",    r"\bmodel risk\b",      r"\btax compliance\b",
-    r"\bhr compliance\b",     r"\bbrand identity\b",  r"\bvisual identity\b",
+    r"\bphysical security\b", r"\bfood security\b",   r"\bnational security\b",
+    r"\bsecurity guard\b",    r"\bguard\b",            r"\bsafety officer\b",
+    r"\bcredit risk\b",       r"\bmarket risk\b",      r"\boperational risk\b",
+    r"\bliquidity risk\b",    r"\bmodel risk\b",       r"\btax compliance\b",
+    r"\bhr compliance\b",     r"\bbrand identity\b",   r"\bvisual identity\b",
     r"\baml\b",               r"\banti.money laundering\b",
     r"\bcredit compliance\b", r"\bcorporate identity\b",
 ]
 
+# Titles that are definitely NOT job postings — exact noise matches
+NOISE_TITLES = {
+    "jobs", "careers", "view all", "see all", "load more", "search jobs",
+    "apply now", "job alert", "get notified", "security policy",
+    "privacy policy", "cookie policy", "learn more", "read more",
+    "click here", "sign in", "security settings", "account security",
+    "information security", "security", "all jobs", "browse jobs",
+}
+
+# Security-adjacent content that isn't a job role
+WEAK_MATCH_PHRASES = [
+    "security awareness", "security policy", "security blog",
+    "security news", "security update", "security advisory",
+    "security bulletin", "security training", "security whitepaper",
+    "security report", "security certification", "security statement",
+    "security tips", "security practices", "security guidelines",
+]
+
+# Context around a link that flags it as non-job content
+RED_FLAG_CONTEXT = [
+    "cookie", "newsletter", "subscribe", "privacy policy",
+    "blog", "article", "news", "press release", "whitepaper",
+    "case study", "webinar", "event", "award", "report",
+]
+
+
 def is_security_job(title: str) -> bool:
-    if not title or len(title) < 6:
+    if not title:
         return False
+
     t = title.lower().strip()
+
+    # ── Length guards ──
+    if len(t) < 10 or len(t) > 120:
+        return False
+
+    # ── Word count: real job titles are 2–10 words ──
+    word_count = len(t.split())
+    if word_count < 2 or word_count > 10:
+        return False
+
+    # ── Exact noise title match ──
+    if t in NOISE_TITLES:
+        return False
+
+    # ── Weak / non-job security content ──
+    if any(w in t for w in WEAK_MATCH_PHRASES):
+        return False
+
+    # ── Must contain a security phrase ──
     if not any(p in t for p in SECURITY_PHRASES):
         return False
-    return not any(re.search(pat, t, re.IGNORECASE) for pat in REJECT_PATTERNS)
+
+    # ── Must NOT match reject patterns ──
+    if any(re.search(pat, t, re.IGNORECASE) for pat in REJECT_PATTERNS):
+        return False
+
+    return True
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # LOCATION SCORING
 # ─────────────────────────────────────────────────────────────────────────────
 OVERSEAS_SIGNALS = [
-    "united states", " usa", "united kingdom", " uk", "london", "canada",
+    "united states", "usa", "united kingdom", " uk", "london", "canada",
     "australia", "germany", "france", "singapore", "ireland", "poland",
     "romania", "new york", "san francisco", "seattle", "amsterdam",
     "westlake", "southlake", "eden prairie", "guangzhou", "cork",
@@ -110,42 +176,40 @@ OTHER_INDIA = [
     "gurugram", "gurgaon", "kolkata", "ahmedabad", "kochi", "coimbatore",
 ]
 
+
 def score_location(loc: str) -> tuple[int, str]:
     """
-    3 = Hyderabad  → top priority
-    2 = Remote     → second
-    1 = Bangalore  → third
+    3 = Hyderabad   → top priority
+    2 = Remote      → second
+    1 = Bangalore   → third
     0 = Other India
-   -1 = Overseas   → drop entirely
+   -1 = Overseas    → drop entirely
     """
     s = loc.lower().strip()
+    if not s:
+        return 0, "❓ Unknown"
     if any(o in s for o in OVERSEAS_SIGNALS):
         return -1, ""
     if "hyderabad" in s or "telangana" in s:
         return 3, "📍 Hyderabad"
     if "remote" in s:
+        # Only count as remote if India-remote or unspecified
+        if any(o in s for o in OVERSEAS_SIGNALS):
+            return -1, ""
         return 2, "🌐 Remote"
     if "bangalore" in s or "bengaluru" in s:
         return 1, "🏙️ Bangalore"
     if "india" in s or any(c in s for c in OTHER_INDIA):
         return 0, f"🇮🇳 {loc.strip()}" if loc.strip() else "🇮🇳 India"
-    # Unknown — keep cautiously
     return 0, f"❓ {loc.strip()}" if loc.strip() else "❓ Unknown"
 
+
 # ─────────────────────────────────────────────────────────────────────────────
-# COMPANY REGISTRY — ALL 110 FROM YOUR ORIGINAL LIST
-#
-# "greenhouse" → Greenhouse public JSON API  (fast, reliable, no browser)
-# "lever"      → Lever public JSON API       (fast, reliable, no browser)
-# "html"       → requests + BeautifulSoup    (works for most own-ATS pages)
-#
-# NOTE: Workday & Eightfold pages are heavily JS-rendered.
-#       requests will attempt them but may get limited results.
-#       Greenhouse/Lever companies will always work reliably.
+# COMPANY REGISTRY — ALL 110
 # ─────────────────────────────────────────────────────────────────────────────
 COMPANIES = {
 
-    # ══ GREENHOUSE — public JSON API, most reliable ═══════════════════════════
+    # ══ GREENHOUSE ═══════════════════════════════════════════════════════════
     "GitLab":               ("greenhouse", "gitlab"),
     "UiPath":               ("greenhouse", "uipath"),
     "Tide":                 ("greenhouse", "tide"),
@@ -180,7 +244,7 @@ COMPANIES = {
     "Chargebee":            ("greenhouse", "chargebee"),
     "Blackbaud":            ("greenhouse", "blackbaud"),
 
-    # ══ LEVER — public JSON API, very reliable ════════════════════════════════
+    # ══ LEVER ════════════════════════════════════════════════════════════════
     "Datadog":              ("lever", "datadog"),
     "Snyk":                 ("lever", "snyk"),
     "Razorpay":             ("lever", "razorpay"),
@@ -559,8 +623,9 @@ COMPANIES = {
         "/6252001/17.385/78.4867/50/2"),
 }
 
+
 # ─────────────────────────────────────────────────────────────────────────────
-# STATE — deduplication (persisted in seen_jobs.json in your repo)
+# STATE — deduplication
 # ─────────────────────────────────────────────────────────────────────────────
 def load_state() -> dict:
     if not Path(STATE_FILE).exists():
@@ -569,24 +634,121 @@ def load_state() -> dict:
         with open(STATE_FILE, "r", encoding="utf-8") as f:
             data = json.load(f)
         cutoff = datetime.now() - timedelta(days=STATE_EXPIRY_DAYS)
+        # Also purge expired entries at write time
         return {
             k: v for k, v in data.items()
-            if datetime.fromisoformat(
-                v.get("seen_at", "2000-01-01")
-            ) > cutoff
+            if datetime.fromisoformat(v.get("seen_at", "2000-01-01")) > cutoff
         }
     except Exception:
         return {}
+
 
 def save_state(state: dict) -> None:
     with open(STATE_FILE, "w", encoding="utf-8") as f:
         json.dump(state, f, indent=2)
 
-def make_id(company: str, title: str, url: str) -> str:
-    return hashlib.md5(f"{company}|{title}|{url}".encode()).hexdigest()
+
+def normalize_title(title: str) -> str:
+    """
+    Collapse near-duplicate titles.
+    'Senior Security Engineer - India' == 'Security Engineer'
+    """
+    t = title.lower().strip()
+    t = re.sub(r'\b(senior|junior|lead|principal|staff|associate|sr\.?|jr\.?)[\s,.-]+', '', t)
+    t = re.sub(r'[\s,|-]+(india|hyderabad|bangalore|bengaluru|remote|telangana).*$', '', t)
+    t = re.sub(r'[^\w\s]', '', t)
+    return " ".join(t.split())
+
+
+def make_id(company: str, title: str) -> str:
+    """Hash on company + normalized title — URL excluded to collapse duplicates."""
+    normalized = normalize_title(title)
+    return hashlib.md5(f"{company}|{normalized}".encode()).hexdigest()
+
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SCRAPERS
+# PRECISION HELPERS
+# ─────────────────────────────────────────────────────────────────────────────
+
+# URL patterns that strongly indicate a real job posting link
+JOB_URL_PATTERNS = [
+    r'/jobs?/\d+',
+    r'/careers?/.*job',
+    r'/apply/',
+    r'/positions?/\d+',
+    r'/openings?/',
+    r'/postings?/\d+',
+    r'gh_jid=',
+    r'lever\.co/',
+    r'job_id=',
+    r'/requisition/',
+    r'jobdetail',
+    r'job-detail',
+    r'job_detail',
+    r'/vacancy/',
+    r'referencenumber',
+    r'jid=',
+    r'/role/',
+]
+
+# CSS selectors that typically wrap job listing cards
+JOB_CONTAINER_SELECTORS = [
+    "[class*='job']", "[class*='position']", "[class*='opening']",
+    "[class*='role']", "[class*='listing']", "[class*='posting']",
+    "[class*='career']", "[class*='vacancy']", "[class*='opportunity']",
+    "[id*='job']", "[id*='careers']", "[id*='openings']",
+    "li[class*='job']", "div[class*='job']", "article",
+    "tr[class*='job']",
+]
+
+
+def looks_like_job_url(url: str) -> bool:
+    return any(re.search(p, url, re.IGNORECASE) for p in JOB_URL_PATTERNS)
+
+
+def job_confidence(title: str, url: str, location: str, container_text: str) -> int:
+    """
+    Score 0–100. Only keep results >= CONFIDENCE_THRESHOLD.
+    """
+    score = 0
+
+    # URL signals
+    if looks_like_job_url(url):
+        score += 30
+    if re.search(r'\d{4,}', url):
+        score += 10   # job ID in URL
+
+    # Title signals
+    words = title.split()
+    if 2 <= len(words) <= 8:
+        score += 20
+    if any(lvl in title.lower() for lvl in [
+        "senior", "lead", "principal", "staff", "junior",
+        "engineer", "analyst", "manager", "architect", "specialist",
+        "consultant", "researcher", "director", "head",
+    ]):
+        score += 20
+
+    # Location signals
+    if location:
+        score += 15
+
+    # Container signals — positive
+    if any(w in container_text.lower() for w in [
+        "apply", "full-time", "fulltime", "department",
+        "team", "posted", "requisition", "part-time",
+    ]):
+        score += 10
+
+    # Container signals — negative (red flags)
+    if any(flag in container_text.lower() for flag in RED_FLAG_CONTEXT):
+        score -= 40
+
+    return max(0, min(score, 100))
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# HTTP HELPER WITH RETRY
 # ─────────────────────────────────────────────────────────────────────────────
 HEADERS = {
     "User-Agent": (
@@ -598,11 +760,29 @@ HEADERS = {
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
 }
 
+
+def _get_with_retry(url: str) -> requests.Response:
+    """GET with up to MAX_RETRIES attempts and exponential backoff."""
+    last_exc = None
+    for attempt in range(1, MAX_RETRIES + 1):
+        try:
+            r = requests.get(url, headers=HEADERS, timeout=REQUEST_TIMEOUT)
+            r.raise_for_status()
+            return r
+        except Exception as e:
+            last_exc = e
+            if attempt < MAX_RETRIES:
+                time.sleep(RETRY_BACKOFF * attempt)
+    raise last_exc
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SCRAPERS
+# ─────────────────────────────────────────────────────────────────────────────
 def fetch_greenhouse(company: str, token: str) -> list[dict]:
     url = f"https://boards-api.greenhouse.io/v1/boards/{token}/jobs?content=true"
     try:
-        r = requests.get(url, headers=HEADERS, timeout=REQUEST_TIMEOUT)
-        r.raise_for_status()
+        r   = _get_with_retry(url)
         out = []
         for item in r.json().get("jobs", []):
             title = item.get("title", "").strip()
@@ -625,11 +805,11 @@ def fetch_greenhouse(company: str, token: str) -> list[dict]:
         log.warning(f"  Greenhouse [{company}]: {e}")
         return []
 
+
 def fetch_lever(company: str, token: str) -> list[dict]:
     url = f"https://api.lever.co/v0/postings/{token}?mode=json"
     try:
-        r = requests.get(url, headers=HEADERS, timeout=REQUEST_TIMEOUT)
-        r.raise_for_status()
+        r   = _get_with_retry(url)
         out = []
         for item in r.json():
             title = item.get("text", "").strip()
@@ -654,23 +834,45 @@ def fetch_lever(company: str, token: str) -> list[dict]:
         log.warning(f"  Lever [{company}]: {e}")
         return []
 
+
 def _clean(raw: str) -> str:
-    """Strip trailing metadata noise from scraped anchor text."""
+    """Aggressively strip metadata noise from scraped text."""
+    if not raw:
+        return ""
+
+    # Collapse whitespace/newlines first
+    raw = " ".join(raw.split())
+
+    # Split on known noise separators and keep only the first part
     for sep in [
         " · ", " - India", " – India", "Hyderabad,", "Bangalore,",
-        "Telangana,", " Posted", "Full-time", "Save for Later",
-        "Requisition", " [L", "\u00b7", "\u2014",
+        "Telangana,", " Posted", "Full-time", "Part-time", "Contract",
+        "Save for Later", "Requisition", " [L", "\u00b7", "\u2014",
+        " | ", " — ", "New!", "Featured", "Urgent", "Hot",
+        "Apply Now", "Easy Apply", "Today", "Yesterday",
     ]:
         raw = raw.split(sep)[0]
-    return raw.strip(" ,.-\t\n\r")
+
+    # Strip trailing standalone numbers (leaked job IDs)
+    raw = re.sub(r'\s*#?\d{4,}\s*$', '', raw)
+
+    # Strip trailing punctuation
+    raw = raw.strip(" ,.-—·|\t\n\r")
+
+    # Convert ALL CAPS to Title Case
+    if raw.isupper() and len(raw) > 3:
+        raw = raw.title()
+
+    return raw
+
 
 def _extract_loc(text: str) -> str:
     """Pull a location string from a block of text."""
     for pat in [
         r"Hyderabad[,\s]+(?:Telangana[,\s]+)?India",
         r"(?:Bengaluru|Bangalore)[,\s]+(?:Karnataka[,\s]+)?India",
-        r"(?:Mumbai|Pune|Chennai|Delhi|Noida|Gurugram)[,\s]+India",
-        r"\bRemote\b",
+        r"(?:Mumbai|Pune|Chennai|Delhi|Noida|Gurugram|Gurgaon)[,\s]+India",
+        r"\bRemote(?:\s*[-–]\s*India)?\b",
         r"\bIndia\b",
     ]:
         m = re.search(pat, text, re.IGNORECASE)
@@ -678,15 +880,35 @@ def _extract_loc(text: str) -> str:
             return m.group(0).strip()
     return ""
 
+
+def _find_job_containers(soup: BeautifulSoup):
+    """
+    Find containers that are likely to hold job listings.
+    Returns list of containers if found, empty list otherwise.
+    """
+    for selector in JOB_CONTAINER_SELECTORS:
+        try:
+            containers = soup.select(selector)
+            if len(containers) >= 2:   # at least 2 = real listing, not a page wrapper
+                return containers
+        except Exception:
+            continue
+    return []
+
+
 def fetch_html(company: str, url: str) -> list[dict]:
     """
-    requests + BeautifulSoup.
-    Works for static/SSR pages.
-    Workday/Eightfold are JS-heavy — may return empty (that's normal).
+    Precision-hardened requests + BeautifulSoup scraper.
+
+    Improvements over original:
+      - Targets job container elements first (not every link on the page)
+      - Validates URLs look like job posting links
+      - Scores each result for confidence
+      - Rejects red-flag context (cookie/blog/policy pages)
+      - Falls back to full-page scan only when containers not found
     """
     try:
-        r = requests.get(url, headers=HEADERS, timeout=REQUEST_TIMEOUT)
-        r.raise_for_status()
+        r = _get_with_retry(url)
     except Exception as e:
         log.warning(f"  HTML fetch [{company}]: {e}")
         return []
@@ -697,40 +919,89 @@ def fetch_html(company: str, url: str) -> list[dict]:
             tag.decompose()
 
         page_text = soup.get_text(" ", strip=True)
-        found     = {}   # title → (job_url, loc_string)
+        found     = {}    # normalized_title → job dict (dedup key)
+        parsed    = urlparse(url)
+        base_url  = f"{parsed.scheme}://{parsed.netloc}"
 
-        # Pass 1 — anchor tags with hrefs (job links are almost always <a>)
-        for a in soup.find_all("a", href=True):
-            title = _clean(a.get_text(strip=True))
-            if not is_security_job(title) or title in found:
-                continue
-            href = a["href"]
+        def resolve(href: str) -> str:
             if href.startswith("http"):
-                job_url = href
-            elif href.startswith("/"):
-                parsed  = urlparse(url)
-                job_url = f"{parsed.scheme}://{parsed.netloc}{href}"
-            else:
-                job_url = url
-            parent     = a.find_parent()
-            ctx        = parent.get_text(" ", strip=True) if parent else ""
-            loc        = _extract_loc(ctx) or _extract_loc(page_text)
-            found[title] = (job_url, loc)
+                return href
+            if href.startswith("/"):
+                return base_url + href
+            return url
 
-        # Pass 2 — headings + list items if Pass 1 got nothing
-        if not found:
-            for tag in soup.find_all(["h1", "h2", "h3", "h4", "li"]):
-                title = _clean(tag.get_text(strip=True))
-                if not is_security_job(title) or title in found:
-                    continue
-                loc = _extract_loc(tag.get_text(" ")) or _extract_loc(page_text)
-                found[title] = (url, loc)
+        def process_anchor(a, ctx_text: str):
+            title = _clean(a.get_text(strip=True))
+            if not is_security_job(title):
+                return
 
-        today = datetime.today().strftime("%Y-%m-%d")
-        out   = []
-        for title, (job_url, loc) in list(found.items())[:50]:
+            href    = a.get("href", "")
+            job_url = resolve(href)
+
+            # Reject if context is red-flag content
+            ctx_lower = ctx_text.lower()
+            if any(flag in ctx_lower for flag in RED_FLAG_CONTEXT):
+                return
+
+            loc          = _extract_loc(ctx_text) or _extract_loc(page_text)
+            confidence   = job_confidence(title, job_url, loc, ctx_text)
+
+            if confidence < CONFIDENCE_THRESHOLD:
+                return
+
             score, badge = score_location(loc)
             if score < 0:
-                continue
-            out.append({
-                "company": company
+                return
+
+            norm = normalize_title(title)
+            if norm not in found:
+                found[norm] = {
+                    "company": company,
+                    "title":   title,
+                    "badge":   badge,
+                    "score":   score,
+                    "url":     job_url,
+                    "posted":  datetime.today().strftime("%Y-%m-%d"),
+                }
+
+        # ── Strategy 1: job container elements (most precise) ─────────────
+        containers = _find_job_containers(soup)
+        if containers:
+            for container in containers:
+                ctx = container.get_text(" ", strip=True)
+                for a in container.find_all("a", href=True):
+                    process_anchor(a, ctx)
+
+        # ── Strategy 2: full-page anchor scan (fallback) ──────────────────
+        if not found:
+            for a in soup.find_all("a", href=True):
+                parent = a.find_parent()
+                ctx    = parent.get_text(" ", strip=True) if parent else ""
+                process_anchor(a, ctx)
+
+        # ── Strategy 3: headings + list items (last resort) ───────────────
+        if not found:
+            for tag in soup.find_all(["h2", "h3", "h4", "li"]):
+                title = _clean(tag.get_text(strip=True))
+                if not is_security_job(title):
+                    continue
+                ctx          = tag.get_text(" ", strip=True)
+                loc          = _extract_loc(ctx) or _extract_loc(page_text)
+                confidence   = job_confidence(title, url, loc, ctx)
+                if confidence < CONFIDENCE_THRESHOLD:
+                    continue
+                score, badge = score_location(loc)
+                if score < 0:
+                    continue
+                norm = normalize_title(title)
+                if norm not in found:
+                    found[norm] = {
+                        "company": company,
+                        "title":   title,
+                        "badge":   badge,
+                        "score":   score,
+                        "url":     url,
+                        "posted":  datetime.today().strftime("%Y-%m-%d"),
+                    }
+
+        return list(found.values())
